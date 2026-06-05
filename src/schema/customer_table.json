@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://CustomerTable",
+    "title": "CustomerTable",
+    "type": "object",
+    "additionalProperties": false,
+    "definitions": {
+        "EmployeeBasicInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                //agregar ID
+                "fullName": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fullName",
+                "phoneNumber"
+            ]
+        }
+    },
+    "properties": {
+        "customerId": {
+            "type": "string"
+        },
+        "created": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "phoneNumber": {
+            "type": "string"
+        },
+        "address": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string"
+        },
+        "threeWordsUbication": {
+            "type": "string"
+        },
+        "createdByEmployee": {
+            "$ref": "#definitions/EmployeeBasicInfo"
+        }
+    },
+    "required": [
+        "customerId",
+        "created",
+        "name",
+        "lastName",
+        "phoneNumber",
+        "address",
+        "status",
+        "createdByEmployee"
+    ]
+}

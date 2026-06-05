@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://CreditResponse",
+  "title": "CreditResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "client": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "lastName", "phoneNumber"]
+    }
+  },
+  "properties": {
+    "creditId": {
+      "type": "string"
+    },
+    "created":{
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "total": {
+      "type": "number"
+    },
+    "client": {
+      "$ref": "#definitions/client"
+    }
+  },
+  "required": ["creditId", "created", "status", "total", "client"]
+}

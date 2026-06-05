@@ -1,0 +1,84 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://CreditTable",
+    "title": "CreditTable",
+    "type": "object",
+    "additionalProperties": false,
+    "definitions": {
+        "customerBasicInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "customerId": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "customerId",
+                "fullName",
+                "phoneNumber"
+            ]
+        },
+        "employeeBasicInfo":{
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "userId": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "customerId",
+                "fullName",
+                "phoneNumber"
+            ]
+        }
+    },
+    "properties": {
+        "creditId": {
+            "type": "string"
+        },
+        "created": {
+            "type": "number"
+        },
+        "startDate": {
+            "type": "number"
+        },
+        "endDate": {
+            "type": "number"
+        },
+        "status": {
+            "type": "string"
+        },
+        "total": {
+            "type": "number"
+        },
+        "customerBasicInfo": {
+            "$ref": "#definitions/customerBasicInfo"
+        },
+        "employeeBasicInfo": {
+            "$ref": "#definitions/client"
+        }
+    },
+    "required": [
+        "userId",
+        "created",
+        "name",
+        "lastName",
+        "phoneNumber",
+        "address",
+        "status"
+    ]
+}

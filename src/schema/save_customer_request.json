@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://SaveCustomerRequest",
+  "title": "SaveCustomerRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "customerId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "threeWordsUbication": {
+      "type": "string"
+    },
+    "employeeIdRecorder": {
+        "type": "string"
+    },
+    "customerIdAval": {
+        "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "lastName",
+    "address",
+    "phoneNumber",
+    "status",
+    "threeWordsUbication",
+    "employeeIdRecorder",
+    "customerIdAval"
+  ]
+}
