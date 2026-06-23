@@ -6,6 +6,7 @@ import { DashboardTableCatalog, DashboardTableCatalogEnum } from '@/shared/const
 import { Category, Entities } from '@/shared/constants/table_types_data';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getFullName } from '@/shared/utils/ProcessDataUtils';
+import { useCustomerStore } from '@/stores/customers.store';
 import { CustomerTable } from '@/types/CustomerTable';
 import { useState } from 'react'
 
@@ -15,165 +16,6 @@ const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
 };
 
-
-const MOCK_CLIENTS: CustomerTable[] = [
-    {
-        customerId: "12687361872alskduefb",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "123898990129asdjaskljdkl",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "1872687320918290dsjjkdskj",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "12987893672shkjdhfkjas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "19827398721kjhsdkjhakjs",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "8367582923nmnbndmfbdsnbmf",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "9387263632hjajshjdas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "94365398332ajhdsghjas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "4369132729ahsjkddsx",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "244878293774jadkhasjkj",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "05948837823snkjdas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "112490975254832hsjsdjb",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    }
-];
 
 
 
@@ -204,7 +46,8 @@ export interface IUseCustomersDashboardState {
 }
 
 export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
-    const [data, setData] = useState<{ records: CustomerTable[], total: number, entityName: DashboardTableCatalogEnum }>({ records: MOCK_CLIENTS, total: MOCK_CLIENTS.length, entityName: DashboardTableCatalogEnum.customers });
+    //const [data, setData] = useState<{ records: CustomerTable[], total: number, entityName: DashboardTableCatalogEnum }>({ records: MOCK_CLIENTS, total: MOCK_CLIENTS.length, entityName: DashboardTableCatalogEnum.customers });
+    const customersData = useCustomerStore (state => state.customersData);
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.customers]);
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<CustomerTable>({
@@ -266,7 +109,7 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
 
     return {
         dashboardHeaderProps: {
-            tittle: `Clientes ${data.total}`,
+            tittle: `Clientes ${customersData.total}`,
             handleOnClick
         },
         dashboardTableProps: {
@@ -275,14 +118,14 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
                 handleOnChangeFilters,
             },
             tablePaginationProps: {
-                count: data.total,
+                count: customersData.total,
                 page: 0,
                 rowsPerPage: 15,
                 rowsPerPageOptions: [5, 8, 15, 25],
                 onPageChange: () => console.log("TablePagination-onPageChange"),
                 onRowsPerPageChange: () => console.log("TablePagination-onRowsPerPageChange")
             },
-            data,
+            data: customersData,
             renderColumnsTable,
             handleOnEditClick,
             handleOnDeleteClick,
