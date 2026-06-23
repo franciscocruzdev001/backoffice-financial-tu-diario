@@ -3,6 +3,10 @@ import { CustomerTable } from '@/types/CustomerTable'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware';
 import { customSessionStorage } from './storages/session-storage.storage';
+import { SearchCustomersRequest } from '@/types/SearchCustomersRequest';
+import axios from "../shared/utils/axiosUtils"
+
+
 
 
 const MOCK_CLIENTS: CustomerTable[] = [
@@ -183,7 +187,13 @@ export const useCustomerStore = create<CustomerStoreState>()(
                 records: CustomerTable[],
                 total: number,
                 entityName: DashboardTableCatalogEnum
-            })=> set (state => ({customersData: value}))
+            })=> set (state => ({customersData: value})),
+            searchCustomersData: async (request: SearchCustomersRequest) => {
+                const response = await axios.post <{ total : number , records : any[] }> ("http://localhost:4001/credits/searchCustomers", request);
+                console.log(response.data);
+                
+            }
+
         }),
         {
             name: "customer-storage",
