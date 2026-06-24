@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import { customSessionStorage } from './storages/session-storage.storage';
 import { SearchCustomersRequest } from '@/types/SearchCustomersRequest';
 import axios from "../shared/utils/axiosUtils"
+import { get } from 'lodash';
 
 
 
@@ -174,12 +175,19 @@ interface CustomerStoreState {
         records: CustomerTable[],
         total: number,
         entityName: DashboardTableCatalogEnum
-    }
+    },
+    setCustomersData: (value: {
+        records: CustomerTable[],
+        total: number,
+        entityName: DashboardTableCatalogEnum
+    }) => void,
+    searchCustomersData: (request: SearchCustomersRequest) => Promise<void>
+
+
 }
 
 
-
-export const useCustomerStore = create<CustomerStoreState>()(
+export const useCustomerStore = create<CustomerStoreState>()( 
     persist(
         (set) => ({
             customersData: { records: MOCK_CLIENTS, total: MOCK_CLIENTS.length, entityName: DashboardTableCatalogEnum.customers },
@@ -187,11 +195,18 @@ export const useCustomerStore = create<CustomerStoreState>()(
                 records: CustomerTable[],
                 total: number,
                 entityName: DashboardTableCatalogEnum
-            })=> set (state => ({customersData: value})),
+            }) => set(state => ({ customersData: value })),
             searchCustomersData: async (request: SearchCustomersRequest) => {
-                const response = await axios.post <{ total : number , records : any[] }> ("http://localhost:4001/credits/searchCustomers", request);
+                const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCustomers", request);
                 console.log(response.data);
-                
+                set(state => ({
+                    customersData: {
+                        records: get(response.data, "data.records", []),
+                        total: get(response.data, "data.total", 0),
+                        entityName: DashboardTableCatalogEnum.customers
+                    }
+                }))
+
             }
 
         }),

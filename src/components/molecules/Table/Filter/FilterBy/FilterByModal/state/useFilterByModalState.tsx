@@ -87,6 +87,7 @@ export const useFilterByModalState = (props: FilterByModalProps): IUseFilterByMo
 
     const onApply = () => {
         //props.handleApplyFilters(draft);
+        console.log("onApply-draft:",draft);
         props.handleApplyFilters(draft);
     };
 
@@ -98,8 +99,8 @@ export const useFilterByModalState = (props: FilterByModalProps): IUseFilterByMo
     }, [open, props.currentFilters]);*/
 
     useEffect(() => {
-        console.log("useEffect_open: ", props.open);
-        console.log("useEffect_currentFilters: ", props.currentFilters);
+        //console.log("useEffect_open: ", props.open);
+        //console.log("useEffect_currentFilters: ", props.currentFilters);
         setDraft([...props.currentFilters]);
         //if (props.open) setDraft({ ...props.currentFilters });
     }, [props.currentFilters]);

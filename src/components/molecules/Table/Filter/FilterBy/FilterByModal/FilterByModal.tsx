@@ -14,7 +14,7 @@ export interface FilterByModalStateProps {
 }
 
 export interface FilterByModalFunctionsProps {
-    handleApplyFilters: (draft: { category: string, value: string }[]) => void;
+    handleApplyFilters: (documentFilter: { category: string, value: string }[]) => void;
     onClose: (event?: object | any) => void;
 }
 

@@ -37,7 +37,7 @@ export interface ToolbarDashboardFilterStateProps {
 }
 
 export interface ToolbarDashboardFilterFunctionsProps {
-    handleOnChangeFilters: (documentFilter: object) => void
+    handleOnChangeFilters: (documentFilter: { category: string, value: string }[]) => void
 }
 
 export type ToolbarDashboardFilterProps = ToolbarDashboardFilterStateProps & ToolbarDashboardFilterFunctionsProps;

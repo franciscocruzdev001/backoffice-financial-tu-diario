@@ -8,7 +8,7 @@ import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getFullName } from '@/shared/utils/ProcessDataUtils';
 import { useCustomerStore } from '@/stores/customers.store';
 import { CustomerTable } from '@/types/CustomerTable';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
     "estatus": ["Activo", "Inactivo", "Pendiente", "Suspendido"],
@@ -34,7 +34,7 @@ export interface IUseCustomersDashboardState {
         //handleOnChangeFilters: (documentFilter: object) => void;
     },*/
     dashboardHeaderProps: DashboardHeaderProps,
-    dashboardTableProps: DashboardTableProps,
+    dashboardTableProps: DashboardTableProps ,
     snackbarNotificationProps: SnackbarNotificationProps,
     modalDeleteItemConfirmProps: ModalDeleteItemConfirmDialogProps
     /*modalDeleteItemConfirm: {
@@ -47,7 +47,7 @@ export interface IUseCustomersDashboardState {
 
 export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
     //const [data, setData] = useState<{ records: CustomerTable[], total: number, entityName: DashboardTableCatalogEnum }>({ records: MOCK_CLIENTS, total: MOCK_CLIENTS.length, entityName: DashboardTableCatalogEnum.customers });
-    const customersData = useCustomerStore (state => state.customersData);
+    const { customersData, searchCustomersData } = useCustomerStore();
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.customers]);
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<CustomerTable>({
@@ -87,7 +87,7 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
         console.log("handleOnClick-customer: ", item);
         console.log("Actualizando...");
     };
-    const handleOnChangeFilters = (documentFilter: object) => {
+    const handleOnChangeFilters = (documentFilter: {category: string, value: string }[]) => {
         console.log("handleOnChangeFilters-documentFilter:", documentFilter);
     }
 
@@ -104,7 +104,19 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
         setShowModalDeleteItemConfirm(false);
         console.log("handleOnDeleteCancel-event: ", event);
         console.log("Actualizando...");
+      
     };
+
+    useEffect(() => {
+        searchCustomersData({
+            createdByEmployeeId: "123",
+            status: ["active"],
+            pagination: {
+                limit: 10,
+                pageNumber: 1
+            }
+        });
+    }, [customersData.entityName]);
 
 
     return {

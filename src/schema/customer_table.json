@@ -9,7 +9,6 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                //agregar ID
                 "fullName": {
                     "type": "string"
                 },
@@ -24,6 +23,9 @@
         }
     },
     "properties": {
+        "_id": {
+            "type": "string"
+        },
         "customerId": {
             "type": "string"
         },
@@ -50,6 +52,9 @@
         },
         "createdByEmployee": {
             "$ref": "#definitions/EmployeeBasicInfo"
+        },
+        "createdByEmployeeId": {
+            "type": "string"
         }
     },
     "required": [
