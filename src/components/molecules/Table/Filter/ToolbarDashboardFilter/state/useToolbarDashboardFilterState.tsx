@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import { groupBy, isEqual } from 'lodash';
 import { useState } from 'react';
 import { ToolbarDashboardFilterProps } from '../ToolbarDashboardFilter';
 
@@ -38,10 +38,12 @@ export const useToolbarDashboardFilterState = (props: ToolbarDashboardFilterProp
     };*/
     const handleApplyFilters = (filters: { category: string, value: string }[]) => {
         setActiveFilters(filters);
+        // Groups items directly into a Map object
+        const groupedByCategory: Record<string, { category: string, value: string }[]> = groupBy(
+            filters,(filter: { category: string, value: string }) => filter.category
+        );
         //BUILD DOCUMENT INDEX FILTER
-        props.handleOnChangeFilters({
-            
-        });
+        props.handleOnChangeFilters(groupedByCategory);
 
         //setPage(0);
         setModalOpen(false);

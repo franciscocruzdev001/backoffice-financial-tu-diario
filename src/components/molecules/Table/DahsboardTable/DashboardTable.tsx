@@ -14,6 +14,7 @@ import { ToolbarDashboardFilter, ToolbarDashboardFilterProps } from '../Filter/T
 import { DashboardTableCatalogEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
 import DashboardTableBody from '../DashboardTableBody/DashboardTableBody';
 import { Entities } from '@/shared/constants/table_types_data';
+import EmptyDashboardTable from '../EmptyDashboardTable/EmptyDashboardTable';
 
 
 function instanceOf<T>(value: unknown, fieldName: string): value is T {
@@ -43,31 +44,35 @@ const DashboardTable: React.FC<DashboardTableProps> = (props: DashboardTableProp
     return (
         <React.Fragment>
             {/* Filter section */}
-            <ToolbarDashboardFilter 
-                filterOptions={props.toolBarFilterProps.filterOptions} 
-                handleOnChangeFilters={props.toolBarFilterProps.handleOnChangeFilters} 
+            <ToolbarDashboardFilter
+                {...props.toolBarFilterProps}
             />
             {/* Table section */}
             <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            {props.renderColumnsTable.map((column: IColumnsTable) => (
-                                <TableCell key={column.columnTableId}>
-                                    <strong>{column.tittle}</strong>
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <DashboardTableBody
-                            renderColumnsTable={props.renderColumnsTable}
-                            data={props.data}
-                            handleOnEditClick={props.handleOnEditClick}
-                            handleOnDeleteClick={props.handleOnDeleteClick}
-                        />
-                    </TableBody>
-                </Table>
+                {/* Refactorizar esto debe ser un children lo demas es estatico para las demas entidades */}
+                {props.data.total === 0 ? (
+                    <EmptyDashboardTable />
+                ) : (
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                {props.renderColumnsTable.map((column: IColumnsTable) => (
+                                    <TableCell key={column.columnTableId}>
+                                        <strong>{column.tittle}</strong>
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <DashboardTableBody
+                                renderColumnsTable={props.renderColumnsTable}
+                                data={props.data}
+                                handleOnEditClick={props.handleOnEditClick}
+                                handleOnDeleteClick={props.handleOnDeleteClick}
+                            />
+                        </TableBody>
+                    </Table>
+                )}
             </TableContainer>
             {/* Pagination section */}
             <TablePagination

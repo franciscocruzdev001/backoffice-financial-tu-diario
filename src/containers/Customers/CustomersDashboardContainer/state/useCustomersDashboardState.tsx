@@ -34,7 +34,7 @@ export interface IUseCustomersDashboardState {
         //handleOnChangeFilters: (documentFilter: object) => void;
     },*/
     dashboardHeaderProps: DashboardHeaderProps,
-    dashboardTableProps: DashboardTableProps ,
+    dashboardTableProps: DashboardTableProps,
     snackbarNotificationProps: SnackbarNotificationProps,
     modalDeleteItemConfirmProps: ModalDeleteItemConfirmDialogProps
     /*modalDeleteItemConfirm: {
@@ -87,8 +87,19 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
         console.log("handleOnClick-customer: ", item);
         console.log("Actualizando...");
     };
-    const handleOnChangeFilters = (documentFilter: {category: string, value: string }[]) => {
+    const handleOnChangeFilters = (documentFilter: Record<string, { category: string, value: string }[]>) => {
         console.log("handleOnChangeFilters-documentFilter:", documentFilter);
+
+        const status: string[] = documentFilter["estatus"].map((filter: { category: string, value: string }) => filter.value );
+
+        searchCustomersData({
+            createdByEmployeeId: "123",
+            status: status,
+            pagination: {
+                limit: 10,
+                pageNumber: 1
+            }
+        });
     }
 
 
@@ -104,8 +115,17 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
         setShowModalDeleteItemConfirm(false);
         console.log("handleOnDeleteCancel-event: ", event);
         console.log("Actualizando...");
-      
+
     };
+
+
+    /*
+    */
+    const handleOnPageChange = (event?: object | any) => {
+        console.log("TablePagination-onPageChange-event:", event);
+    };
+
+
 
     useEffect(() => {
         searchCustomersData({
@@ -132,9 +152,9 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
             tablePaginationProps: {
                 count: customersData.total,
                 page: 0,
-                rowsPerPage: 15,
+                rowsPerPage: 5,
                 rowsPerPageOptions: [5, 8, 15, 25],
-                onPageChange: () => console.log("TablePagination-onPageChange"),
+                onPageChange: handleOnPageChange,
                 onRowsPerPageChange: () => console.log("TablePagination-onRowsPerPageChange")
             },
             data: customersData,
