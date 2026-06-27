@@ -64,7 +64,7 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
      * Pagination State
      */
     const [page, setPage] = useState<number>(0);
-    const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5)
+    const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5);
 
 
 

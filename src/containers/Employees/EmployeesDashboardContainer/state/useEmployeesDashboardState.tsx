@@ -6,9 +6,11 @@ import { DashboardTableCatalog, DashboardTableCatalogEnum } from '@/shared/const
 import { Category, Entities } from '@/shared/constants/table_types_data';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getFullName } from '@/shared/utils/ProcessDataUtils';
+import { useEmployeeStore } from '@/stores/employees.store';
 import { EmployeeTable } from '@/types/EmployeeTable';
-import { get } from 'lodash';
-import { useState } from 'react'
+import { FiltersItems } from '@/types/SearchEmployeesRequest';
+import { defaultTo, get } from 'lodash';
+import { useEffect, useState } from 'react'
 
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
     "estatus": ["Activo", "Inactivo", "Pendiente", "Suspendido"],
@@ -77,19 +79,6 @@ const MOCK_EMPLOYEES: EmployeeTable[] = [
 
 
 export interface IUseEmployeesDashboardState {
-    /*dashboardHeader: {
-        handleOnClick: (event?: object | any) => void;
-    },*
-    /*dashboardTable: {
-        toolBarfilterProps: ToolbarDashboardFilterProps;
-        tablePaginationProps: TablePaginationProps;
-        renderColumnsTable: IColumnsTable[];
-        //filterOptions: Record<Category, string[]>;
-        data: { records: Customer[], total: number, entityName: DashboardTableCatalogEnum }
-        handleOnEditClick: (customer: Customer) => void;
-        handleOnDeleteClick: (customer: Customer) => void;
-        //handleOnChangeFilters: (documentFilter: object) => void;
-    },*/
     dashboardHeaderProps: DashboardHeaderProps,
     dashboardTableProps: DashboardTableProps,
     snackbarNotificationProps: SnackbarNotificationProps,
@@ -103,7 +92,25 @@ export interface IUseEmployeesDashboardState {
 }
 
 export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
-    const [data, setData] = useState<{ records: EmployeeTable[], total: number, entityName: DashboardTableCatalogEnum }>({ records: MOCK_EMPLOYEES, total: MOCK_EMPLOYEES.length, entityName: DashboardTableCatalogEnum.employees });
+
+    /**
+         * Custumer data state
+         */
+    const { employeesData, searchEmployeesData } = useEmployeeStore();
+    /**
+         * Filter State
+         */
+    const [filterItems, setFilterItems] = useState<FiltersItems>({
+        creditorCompanyId: "123",
+        status: [],
+    });
+    /**
+     * Pagination State
+     */
+    const [page, setPage] = useState<number>(0);
+
+    const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5);
+
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.employees]);
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<EmployeeTable>();
@@ -131,10 +138,25 @@ export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
         console.log("handleOnClick-customer: ", item);
         console.log("Actualizando...");
     };
-    const handleOnChangeFilters = (documentFilter: object) => {
+    const handleOnChangeFilters = (documentFilter: Record<string, { category: string, value: string }[]>) => {
         console.log("handleOnChangeFilters-documentFilter:", documentFilter);
-    }
 
+        const tempFilterItems: FiltersItems = {
+            status: defaultTo(documentFilter["estatus"], []).map((filter: { category: string, value: string }) => filter.value),
+            creditorCompanyId: "123"
+        }
+
+        setFilterItems(tempFilterItems);
+        setPage(0);
+
+        searchEmployeesData({
+            filtersItems: tempFilterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: 0
+            }
+        });
+    }
 
     /**
      * 
@@ -149,11 +171,46 @@ export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
         console.log("handleOnDeleteCancel-event: ", event);
         console.log("Actualizando...");
     };
+     const handleOnPageChange = (event?: object | any, newPage?: number) => {
+        setPage(defaultTo(newPage, 0));
+        searchEmployeesData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: defaultTo(newPage, 0),
+            }
+        });
+        console.log("TablePagination-onPageChange-event:", event);
+    };
+
+    const handleOnRowsPerPageChange = (event: object) => {
+        setRowsPerPageChange(get(event, "target.value", 5));
+        setPage(0);
+        searchEmployeesData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: get(event, "target.value", 5),
+                pageNumber: 0,
+            }
+        });
+        console.log("TablePagination-onPageChange-event:", event);
+    };
+
+    useEffect(() => {
+        searchEmployeesData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: page
+            }
+        });
+    }, [employeesData.entityName]);
+
 
 
     return {
         dashboardHeaderProps: {
-            tittle: `Empleados ${data.total}`,
+            tittle: `Empleados ${employeesData.total}`,
             handleOnClick
         },
         dashboardTableProps: {
@@ -162,14 +219,14 @@ export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
                 handleOnChangeFilters,
             },
             tablePaginationProps: {
-                count: data.total,
-                page: 0,
-                rowsPerPage: 15,
+                count: employeesData.total,
+                page: page,
+                rowsPerPage: rowsPerPageChange,
                 rowsPerPageOptions: [5, 8, 15, 25],
-                onPageChange: () => console.log("TablePagination-onPageChange"),
-                onRowsPerPageChange: () => console.log("TablePagination-onRowsPerPageChange")
+                onPageChange: handleOnPageChange,
+                onRowsPerPageChange: handleOnRowsPerPageChange
             },
-            data,
+            data: employeesData,
             renderColumnsTable,
             handleOnEditClick,
             handleOnDeleteClick,
