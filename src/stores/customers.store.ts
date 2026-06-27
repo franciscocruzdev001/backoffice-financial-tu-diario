@@ -7,169 +7,6 @@ import { SearchCustomersRequest } from '@/types/SearchCustomersRequest';
 import axios from "../shared/utils/axiosUtils"
 import { get } from 'lodash';
 
-
-
-
-const MOCK_CLIENTS: CustomerTable[] = [
-    {
-        customerId: "12687361872alskduefb",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "123898990129asdjaskljdkl",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "1872687320918290dsjjkdskj",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "12987893672shkjdhfkjas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "19827398721kjhsdkjhakjs",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "8367582923nmnbndmfbdsnbmf",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "9387263632hjajshjdas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "94365398332ajhdsghjas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "4369132729ahsjkddsx",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "244878293774jadkhasjkj",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "05948837823snkjdas",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    },
-    {
-        customerId: "112490975254832hsjsdjb",
-        name: "Chema de jesus",
-        lastName: "Tapia",
-        phoneNumber: "9612345678",
-        address: "Direccion de pruebaaaaaaaaa.",
-        status: "activo",
-        created: 1774658142000,
-        createdByEmployee: {
-            fullName: "Manuel de Jesus Escobar",
-            phoneNumber: "9612345678"
-        }
-    }
-];
-
-
 interface CustomerStoreState {
     customersData: {
         records: CustomerTable[],
@@ -190,7 +27,7 @@ interface CustomerStoreState {
 export const useCustomerStore = create<CustomerStoreState>()( 
     persist(
         (set) => ({
-            customersData: { records: MOCK_CLIENTS, total: MOCK_CLIENTS.length, entityName: DashboardTableCatalogEnum.customers },
+            customersData: { records: [], total: 0, entityName: DashboardTableCatalogEnum.customers },
             setCustomersData: (value: {
                 records: CustomerTable[],
                 total: number,
@@ -206,9 +43,7 @@ export const useCustomerStore = create<CustomerStoreState>()(
                         entityName: DashboardTableCatalogEnum.customers
                     }
                 }))
-
             }
-
         }),
         {
             name: "customer-storage",

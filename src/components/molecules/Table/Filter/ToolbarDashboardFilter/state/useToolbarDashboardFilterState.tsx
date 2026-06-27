@@ -40,8 +40,10 @@ export const useToolbarDashboardFilterState = (props: ToolbarDashboardFilterProp
         setActiveFilters(filters);
         // Groups items directly into a Map object
         const groupedByCategory: Record<string, { category: string, value: string }[]> = groupBy(
-            filters,(filter: { category: string, value: string }) => filter.category
+            filters, (filter: { category: string, value: string }) => filter.category
         );
+        console.log("handleApplyFilters-groupedByCategory: ", groupedByCategory);
+        console.log("handleApplyFilters-filters: ", groupedByCategory);
         //BUILD DOCUMENT INDEX FILTER
         props.handleOnChangeFilters(groupedByCategory);
 
@@ -65,13 +67,18 @@ export const useToolbarDashboardFilterState = (props: ToolbarDashboardFilterProp
     };*/
 
     const handleClearAll = () => {
-        setActiveFilters([]);
+        //setActiveFilters([]);
+        handleApplyFilters([]);
         //setSearch("");
         //setPage(0);
     };
     const handleRemoveChip = (category: string, value: string) => {
-        setActiveFilters((prev) => [
+        /*setActiveFilters((prev) => [
             ...prev.filter((item) => !(isEqual(item.category, category) && isEqual(item.value, value)))
+        ]);*/
+
+        handleApplyFilters([
+            ...activeFilters.filter((item) => !(isEqual(item.category, category) && isEqual(item.value, value))),
         ]);
         //setPage(0);
     };

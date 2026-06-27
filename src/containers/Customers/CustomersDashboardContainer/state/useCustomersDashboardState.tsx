@@ -8,6 +8,9 @@ import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getFullName } from '@/shared/utils/ProcessDataUtils';
 import { useCustomerStore } from '@/stores/customers.store';
 import { CustomerTable } from '@/types/CustomerTable';
+import { FiltersItems } from '@/types/SearchCustomersRequest';
+import { FilteringStyledOptions } from '@emotion/styled';
+import { defaultTo, get } from 'lodash';
 import { useEffect, useState } from 'react'
 
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
@@ -46,8 +49,25 @@ export interface IUseCustomersDashboardState {
 }
 
 export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
-    //const [data, setData] = useState<{ records: CustomerTable[], total: number, entityName: DashboardTableCatalogEnum }>({ records: MOCK_CLIENTS, total: MOCK_CLIENTS.length, entityName: DashboardTableCatalogEnum.customers });
+    /**
+     * Custumer data state
+     */
     const { customersData, searchCustomersData } = useCustomerStore();
+    /**
+     * Filter State
+     */
+    const [filterItems, setFilterItems] = useState<FiltersItems>({
+        createdByEmployeeId: "123",
+        status: [],
+    });
+    /**
+     * Pagination State
+     */
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5)
+
+
+
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.customers]);
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<CustomerTable>({
@@ -90,14 +110,19 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
     const handleOnChangeFilters = (documentFilter: Record<string, { category: string, value: string }[]>) => {
         console.log("handleOnChangeFilters-documentFilter:", documentFilter);
 
-        const status: string[] = documentFilter["estatus"].map((filter: { category: string, value: string }) => filter.value );
+        const tempFilterItems: FiltersItems = {
+            status: defaultTo(documentFilter["estatus"], []).map((filter: { category: string, value: string }) => filter.value),
+            createdByEmployeeId: "123"
+        }
+
+        setFilterItems(tempFilterItems);
+        setPage(0);
 
         searchCustomersData({
-            createdByEmployeeId: "123",
-            status: status,
+            filtersItems: tempFilterItems,
             pagination: {
-                limit: 10,
-                pageNumber: 1
+                limit: rowsPerPageChange,
+                pageNumber: 0
             }
         });
     }
@@ -121,7 +146,28 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
 
     /*
     */
-    const handleOnPageChange = (event?: object | any) => {
+    const handleOnPageChange = (event?: object | any, newPage?: number) => {
+        setPage(defaultTo(newPage, 0));
+        searchCustomersData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: defaultTo(newPage, 0),
+            }
+        });
+        console.log("TablePagination-onPageChange-event:", event);
+    };
+
+    const handleOnRowsPerPageChange = (event: object) => {
+        setRowsPerPageChange(get(event, "target.value", 5));
+        setPage(0);
+        searchCustomersData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: get(event, "target.value", 5),
+                pageNumber: 0,
+            }
+        });
         console.log("TablePagination-onPageChange-event:", event);
     };
 
@@ -129,11 +175,10 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
 
     useEffect(() => {
         searchCustomersData({
-            createdByEmployeeId: "123",
-            status: ["active"],
+            filtersItems: filterItems,
             pagination: {
-                limit: 10,
-                pageNumber: 1
+                limit: rowsPerPageChange,
+                pageNumber: page
             }
         });
     }, [customersData.entityName]);
@@ -151,11 +196,11 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
             },
             tablePaginationProps: {
                 count: customersData.total,
-                page: 0,
-                rowsPerPage: 5,
+                page: page,
+                rowsPerPage: rowsPerPageChange,
                 rowsPerPageOptions: [5, 8, 15, 25],
                 onPageChange: handleOnPageChange,
-                onRowsPerPageChange: () => console.log("TablePagination-onRowsPerPageChange")
+                onRowsPerPageChange: handleOnRowsPerPageChange
             },
             data: customersData,
             renderColumnsTable,
