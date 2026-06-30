@@ -222,7 +222,7 @@ export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
                 count: employeesData.total,
                 page: page,
                 rowsPerPage: rowsPerPageChange,
-                rowsPerPageOptions: [5, 8, 15, 25],
+                rowsPerPageOptions: [5, 8, 15, 25, 50 , 100],
                 onPageChange: handleOnPageChange,
                 onRowsPerPageChange: handleOnRowsPerPageChange
             },

@@ -198,7 +198,7 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
                 count: customersData.total,
                 page: page,
                 rowsPerPage: rowsPerPageChange,
-                rowsPerPageOptions: [5, 8, 15, 25],
+                rowsPerPageOptions: [5, 8, 15, 25, 100],
                 onPageChange: handleOnPageChange,
                 onRowsPerPageChange: handleOnRowsPerPageChange
             },

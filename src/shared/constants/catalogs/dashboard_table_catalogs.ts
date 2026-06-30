@@ -19,9 +19,13 @@ export enum CustomerColumnsEnum {
 }
 
 export enum CreditColumnsEnum {
-    customers = "customers",
-    credits = "credits",
-    employees = "employees"
+    creditName = "creditName",
+    status = "status",
+    created = "created",
+    total = "total",
+    customerInfo = "customerInfo",
+    employeeInfo = "employeeInfo",
+    actions = "actions"
 }
 
 export enum EmployeeColumnsEnum {
@@ -59,9 +63,20 @@ const ALL_EMPLOYEE_RENDER_COLUMNS: IColumnsTable[] = [
     { columnTableId: EmployeeColumnsEnum.actions, tittle: "Acciones" }
 ];
 
+const ALL_CREDITS_RENDER_COLUMNS: IColumnsTable[] = [
+    { columnTableId: CreditColumnsEnum.creditName, tittle: "Nombre Credito" },
+    { columnTableId: CreditColumnsEnum.created, tittle: "Registro" },
+    { columnTableId: CreditColumnsEnum.customerInfo, tittle: "Informacion Cliente" },
+    { columnTableId: CreditColumnsEnum.employeeInfo, tittle: "Informacion Empleado" },
+    { columnTableId: CreditColumnsEnum.status, tittle: "Status" },
+    { columnTableId: CreditColumnsEnum.total, tittle: "Total" },
+    { columnTableId: CreditColumnsEnum.actions, tittle: "Acciones" }
+];
+
 export const DashboardTableCatalog: Record<string, IColumnsTable[]> = {
     [DashboardTableCatalogEnum.customers]: ALL_CUSTOMER_RENDER_COLUMNS,
-    [DashboardTableCatalogEnum.credits]: [],
+    [DashboardTableCatalogEnum.credits]: ALL_CREDITS_RENDER_COLUMNS,
     [DashboardTableCatalogEnum.employees]: ALL_EMPLOYEE_RENDER_COLUMNS,
     [DashboardTableCatalogEnum.transactions]: []
+
 }

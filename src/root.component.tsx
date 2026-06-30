@@ -13,6 +13,7 @@ import DashnboardHome from './containers/Main/DashboardHome/DashnboardHome.tsx';
 import CustomersDashboardContainer from './containers/Customers/CustomersDashboardContainer/CustomersDashboardContainer.tsx';
 import CustomerContainer from './containers/Customers/CustomerContainer/CustomerContainer.tsx';
 import EmployeesDashboardContainer from './containers/Employees/EmployeesDashboardContainer/EmployeesDashboardContainer.tsx';
+import CreditsDashboardContainer from './containers/Credits/CreditsDashboardContainer/CreditsDashboardContainer.tsx';
 
 
 export const appRouter = createBrowserRouter([
@@ -23,7 +24,7 @@ export const appRouter = createBrowserRouter([
       // DASHBOARD'S
       { index: true, path: "employee-dashboard", Component: EmployeesDashboardContainer },
       { index: true, path: "customer-dashboard", Component: CustomersDashboardContainer },
-      { index: true, path: "credit-dashboard", Component: CustomersDashboardContainer },
+      { index: true, path: "credit-dashboard", Component: CreditsDashboardContainer },
       { index: true, path: "transaction-dashboard", Component: CustomersDashboardContainer },
       // ENTITIES FORMS
       { index: true, path: "employee-create", Component: CustomerContainer },

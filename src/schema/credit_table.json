@@ -40,14 +40,20 @@
                 }
             },
             "required": [
-                "customerId",
+                "userId",
                 "fullName",
                 "phoneNumber"
             ]
         }
     },
     "properties": {
-        "creditId": {
+        "name": {
+            "type": "string"
+        },
+         "lastName": {
+            "type": "string"
+        },
+         "creditId": {
             "type": "string"
         },
         "created": {
@@ -69,16 +75,18 @@
             "$ref": "#definitions/customerBasicInfo"
         },
         "employeeBasicInfo": {
-            "$ref": "#definitions/client"
+            "$ref": "#definitions/employeeBasicInfo"
         }
     },
     "required": [
-        "userId",
+        "creditId",
         "created",
+        "startDate",
+        "endDate",
         "name",
         "lastName",
-        "phoneNumber",
-        "address",
-        "status"
+        "status",
+        "total"
+
     ]
 }

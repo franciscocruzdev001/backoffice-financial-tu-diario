@@ -74,6 +74,32 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             </React.Fragment>
         )
     }
+    const buildTableBodyCredits = (data: {
+        records: Entities[],
+        total: number,
+        entityName: DashboardTableCatalogEnum
+    }) => {
+        return (
+            <React.Fragment>
+                {data.records.map((record: Entities, index) => {
+                    const customer: CustomerTable = record as CustomerTable;
+                    return (
+                        <TableRow key={`TableRow_${data.entityName}_${index}`}>
+                            {props.renderColumnsTable.map((column: IColumnsTable) => (
+                                <CustomerCells
+                                    key={column.columnTableId + customer.customerId}
+                                    columnTable={column}
+                                    customer={customer}
+                                    handleOnDeleteClick={props.handleOnDeleteClick}
+                                    handleOnEditClick={props.handleOnEditClick}
+                                />
+                            ))}
+                        </TableRow>
+                    )
+                })}
+            </React.Fragment>
+        )
+    }
 
     const buildTableBodyByEntityName = (data: {
         records: Entities[],
@@ -85,7 +111,7 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             case DashboardTableCatalogEnum.customers:
                 return buildTableBodyCustomer(data);
             case DashboardTableCatalogEnum.credits:
-                return <></>;
+                return buildTableBodyCredits(data);
             case DashboardTableCatalogEnum.employees:
                 return buildTableBodyEmployee(data);
             case DashboardTableCatalogEnum.transactions:
