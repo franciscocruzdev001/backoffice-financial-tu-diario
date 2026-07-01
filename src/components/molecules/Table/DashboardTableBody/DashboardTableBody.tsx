@@ -7,6 +7,8 @@ import { Entities } from '@/shared/constants/table_types_data';
 import { CustomerTable } from '@/types/CustomerTable';
 import { EmployeeTable } from '@/types/EmployeeTable';
 import { EmployeeCells } from '../CustomCells/EmployeeCells/EmployeeCells';
+import { CreditTable } from '@/types/CreditTable';
+import { CreditCells } from '../CustomCells/CreditCells/CreditsCells';
 
 export interface DashboardTableBodyStateProps {
     renderColumnsTable: IColumnsTable[];
@@ -47,7 +49,6 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             </React.Fragment>
         )
     }
-
     const buildTableBodyEmployee = (data: {
         records: Entities[],
         total: number,
@@ -82,14 +83,14 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
         return (
             <React.Fragment>
                 {data.records.map((record: Entities, index) => {
-                    const customer: CustomerTable = record as CustomerTable;
+                    const credit: CreditTable = record as CreditTable;
                     return (
                         <TableRow key={`TableRow_${data.entityName}_${index}`}>
                             {props.renderColumnsTable.map((column: IColumnsTable) => (
-                                <CustomerCells
-                                    key={column.columnTableId + customer.customerId}
+                                <CreditCells
+                                    key={column.columnTableId + credit.creditId}
                                     columnTable={column}
-                                    customer={customer}
+                                    credit={credit}
                                     handleOnDeleteClick={props.handleOnDeleteClick}
                                     handleOnEditClick={props.handleOnEditClick}
                                 />
@@ -100,7 +101,6 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             </React.Fragment>
         )
     }
-
     const buildTableBodyByEntityName = (data: {
         records: Entities[],
         total: number,
