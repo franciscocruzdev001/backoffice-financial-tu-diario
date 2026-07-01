@@ -34,9 +34,9 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
                     const customer: CustomerTable = record as CustomerTable;
                     return (
                         <TableRow key={`TableRow_${data.entityName}_${index}`}>
-                            {props.renderColumnsTable.map((column: IColumnsTable) => (
+                            {props.renderColumnsTable.map((column: IColumnsTable, indexCell: number) => (
                                 <CustomerCells
-                                    key={column.columnTableId + customer.customerId}
+                                    key={`CustomerCell_${column.columnTableId}_${customer.customerId}_${indexCell}`}
                                     columnTable={column}
                                     customer={customer}
                                     handleOnDeleteClick={props.handleOnDeleteClick}
@@ -60,9 +60,9 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
                     const employee: EmployeeTable = record as EmployeeTable;
                     return (
                         <TableRow key={`TableRow_${data.entityName}_${index}`}>
-                            {props.renderColumnsTable.map((column: IColumnsTable) => (
+                            {props.renderColumnsTable.map((column: IColumnsTable, indexCell: number) => (
                                 <EmployeeCells
-                                    key={column.columnTableId + employee.userId}
+                                    key={`EmployeeCell_${column.columnTableId}_${employee.userId}_${indexCell}`}
                                     columnTable={column}
                                     employee={employee}
                                     handleOnDeleteClick={props.handleOnDeleteClick}
@@ -86,9 +86,9 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
                     const credit: CreditTable = record as CreditTable;
                     return (
                         <TableRow key={`TableRow_${data.entityName}_${index}`}>
-                            {props.renderColumnsTable.map((column: IColumnsTable) => (
+                            {props.renderColumnsTable.map((column: IColumnsTable, indexCell: number) => (
                                 <CreditCells
-                                    key={column.columnTableId + credit.creditId}
+                                    key={`EmployeeCell_${column.columnTableId}_${credit.creditId}_${indexCell}`}
                                     columnTable={column}
                                     credit={credit}
                                     handleOnDeleteClick={props.handleOnDeleteClick}

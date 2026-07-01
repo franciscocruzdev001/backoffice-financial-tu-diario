@@ -1,6 +1,7 @@
 export interface CreditTable {
     created:            number;
     creditId:           string;
+    creditorCompanyId?: string;
     customerBasicInfo?: CustomerBasicInfo;
     employeeBasicInfo?: EmployeeBasicInfo;
     endDate:            number;

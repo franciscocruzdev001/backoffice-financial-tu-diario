@@ -56,6 +56,9 @@
          "creditId": {
             "type": "string"
         },
+        "creditorCompanyId":{
+            "type": "string"
+        },
         "created": {
             "type": "number"
         },
