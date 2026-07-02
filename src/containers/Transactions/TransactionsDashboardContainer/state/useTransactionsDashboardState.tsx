@@ -3,19 +3,20 @@ import { ModalDeleteItemConfirmDialogProps } from '@/components/molecules/ModalD
 import { SnackbarNotificationProps } from '@/components/molecules/SnackbarNotification/SnackbarNotification';
 import { DashboardTableProps } from '@/components/molecules/Table/DahsboardTable/DashboardTable';
 import { DashboardTableCatalog, DashboardTableCatalogEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
-import { Category } from '@/shared/constants/table_types_data';
+import { Category, Entities } from '@/shared/constants/table_types_data';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getFullName } from '@/shared/utils/ProcessDataUtils';
+import { useTransactionStore } from '@/stores/transactions.store';
+import { FiltersItems } from '@/types/SearchTransactionsRequest';
 import { TransactionTable } from '@/types/TransactionTable';
-import { useState } from 'react'
+import { defaultTo, get } from 'lodash';
+import { useEffect, useState } from 'react'
 
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
     "estatus": ["Activo", "Inactivo", "Pendiente", "Suspendido"],
     "registro": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
 };
-
-
 
 
 export interface IUseTransactionsDashboardState {
@@ -26,23 +27,22 @@ export interface IUseTransactionsDashboardState {
 }
 
 export const useTransactionsDashboardState = (): IUseTransactionsDashboardState => {
-    const [transactionsData, setTransactionsData] = useState<{
-        records: TransactionTable[],
-        total: number,
-        entityName: DashboardTableCatalogEnum
-    }>({
-        records: [{
-            transactionId: "123",
-            address: "Direccion de prueba",
-            created: 1783022812000,
-            lastName: "Siete",
-            name: "Aguilar",
-            phoneNumber: "0000000000",
-            status: "Activo"
-        }],
-        total: 1,
-        entityName: DashboardTableCatalogEnum.transactions
+    /**
+            * Transaction data state
+            */
+    const { transactionsData, searchTransactionsData } = useTransactionStore();
+    /**
+         * Filter State
+         */
+    const [filterItems, setFilterItems] = useState<FiltersItems>({
+        creditorCompanyId: "123",
+        status: [],
     });
+    /**
+     * Pagination State
+     */
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5);
 
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.transactions]);
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
@@ -56,28 +56,122 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         status: "Activo"
     });
 
+    /**
+        * 
+        * Dashboard header funtions
+        */
+    const handleOnClick = (event?: object | any) => {
+        console.log("handleOnClick-event: ", event);
+        console.log("Actualizando...");
+    };
+
+    /**
+     * 
+     * Dashboard table funtions 
+     */
+    const handleOnEditClick = (item: Entities) => {
+        console.log("handleOnClick-customer: ", item);
+        console.log("Actualizando...");
+    };
+    const handleOnDeleteClick = (item: Entities) => {
+        setSelectedItem({ ...item as TransactionTable });
+        setShowModalDeleteItemConfirm(true);
+        console.log("handleOnClick-customer: ", item);
+        console.log("Actualizando...");
+    };
+    const handleOnChangeFilters = (documentFilter: Record<string, { category: string, value: string }[]>) => {
+        console.log("handleOnChangeFilters-documentFilter:", documentFilter);
+
+        const tempFilterItems: FiltersItems = {
+            status: defaultTo(documentFilter["estatus"], []).map((filter: { category: string, value: string }) => filter.value),
+            creditorCompanyId: "123"
+        }
+
+        setFilterItems(tempFilterItems);
+        setPage(0);
+
+        searchTransactionsData({
+            filtersItems: tempFilterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: 0
+            }
+        });
+    }
+
+    /**
+     * 
+     * Modal delete item funtions
+     */
+    const handleOnDeleteConfirm = (event?: object | any) => {
+        console.log("handleOnDeleteConfirm-event: ", event);
+        console.log("Actualizando...");
+    };
+    const handleOnDeleteCancel = (event?: object | any) => {
+        setShowModalDeleteItemConfirm(false);
+        console.log("handleOnDeleteCancel-event: ", event);
+        console.log("Actualizando...");
+    };
+    const handleOnPageChange = (event?: object | any, newPage?: number) => {
+        setPage(defaultTo(newPage, 0));
+        searchTransactionsData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: defaultTo(newPage, 0),
+            }
+        });
+        console.log("TablePagination-onPageChange-event:", event);
+    };
+
+    const handleOnRowsPerPageChange = (event: object) => {
+        setRowsPerPageChange(get(event, "target.value", 5));
+        setPage(0);
+        searchTransactionsData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: get(event, "target.value", 5),
+                pageNumber: 0,
+            }
+        });
+        console.log("TablePagination-onPageChange-event:", event);
+    };
+
+    useEffect(() => {
+        searchTransactionsData({
+            filtersItems: filterItems,
+            pagination: {
+                limit: rowsPerPageChange,
+                pageNumber: page
+            }
+        });
+    }, [transactionsData.entityName]);
+
+
+
+
     return {
         dashboardHeaderProps: {
             tittle: `Transacciones ${transactionsData.total}`,
-            handleOnClick: () => console.log("dashboardHeaderProps-handleOnClick")
+            handleOnClick
         },
         dashboardTableProps: {
             toolBarFilterProps: {
                 filterOptions: CATALOG_FILTER_OPTIONS,
-                handleOnChangeFilters: () => console.log("dashboardTableProps-handleOnChangeFilters")
+                handleOnChangeFilters
             },
             tablePaginationProps: {
                 count: transactionsData.total,
-                page: 0,
-                rowsPerPage: 5,
+                page: page,
+                rowsPerPage: rowsPerPageChange,
                 rowsPerPageOptions: [5, 8, 15, 25, 100],
-                onPageChange: () => console.log("dashboardTableProps-tablePaginationProps-onPageChange"),
-                onRowsPerPageChange: () => console.log("dashboardTableProps-tablePaginationProps-onRowsPerPageChange")
+                onPageChange: handleOnPageChange,
+                onRowsPerPageChange: handleOnRowsPerPageChange
             },
             data: transactionsData,
             renderColumnsTable,
-            handleOnEditClick: () => console.log("dashboardTableProps-handleOnEditClick"),
-            handleOnDeleteClick: () => console.log("dashboardTableProps-handleOnDeleteClick"),
+            handleOnEditClick,
+            handleOnDeleteClick
         },
         snackbarNotificationProps: {
             open: false,
@@ -96,8 +190,8 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             },
             open: showModalDeleteItemConfirm,
             loadingDeleteItem: false,
-            handleOnDeleteConfirm: () => console.log("modalDeleteItemConfirmProps-handleOnDeleteConfirm"),
-            handleOnDeleteCancel: () => console.log("modalDeleteItemConfirmProps-handleOnDeleteCancel"),
+            handleOnDeleteConfirm,
+            handleOnDeleteCancel
         }
     }
 }

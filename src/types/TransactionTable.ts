@@ -1,9 +1,10 @@
 export interface TransactionTable {
-    address:       string;
-    created:       number;
-    lastName:      string;
-    name:          string;
-    phoneNumber:   string;
-    status:        string;
-    transactionId: string;
+    address:            string;
+    created:            number;
+    creditorCompanyId?: string;
+    lastName:           string;
+    name:               string;
+    phoneNumber:        string;
+    status:             string;
+    transactionId:      string;
 }
