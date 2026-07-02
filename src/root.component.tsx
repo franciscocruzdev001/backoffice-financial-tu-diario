@@ -14,6 +14,7 @@ import CustomersDashboardContainer from './containers/Customers/CustomersDashboa
 import CustomerContainer from './containers/Customers/CustomerContainer/CustomerContainer.tsx';
 import EmployeesDashboardContainer from './containers/Employees/EmployeesDashboardContainer/EmployeesDashboardContainer.tsx';
 import CreditsDashboardContainer from './containers/Credits/CreditsDashboardContainer/CreditsDashboardContainer.tsx';
+import TransactionsDashboardContainer from './containers/Transactions/TransactionsDashboardContainer/TransactionsDashboardContainer.tsx';
 
 
 export const appRouter = createBrowserRouter([
@@ -25,7 +26,7 @@ export const appRouter = createBrowserRouter([
       { index: true, path: "employee-dashboard", Component: EmployeesDashboardContainer },
       { index: true, path: "customer-dashboard", Component: CustomersDashboardContainer },
       { index: true, path: "credit-dashboard", Component: CreditsDashboardContainer },
-      { index: true, path: "transaction-dashboard", Component: CustomersDashboardContainer },
+      { index: true, path: "transaction-dashboard", Component: TransactionsDashboardContainer },
       // ENTITIES FORMS
       { index: true, path: "employee-create", Component: CustomerContainer },
       { index: true, path: "customer-create", Component: CustomerContainer },

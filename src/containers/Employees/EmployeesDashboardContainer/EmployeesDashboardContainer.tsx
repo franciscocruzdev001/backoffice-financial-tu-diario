@@ -18,7 +18,7 @@ const EmployeesDashboardContainer = () => {
         snackbarNotificationProps,
         modalDeleteItemConfirmProps
     } = useCustomersDashboardState();*/
-     const {
+    const {
         dashboardHeaderProps,
         dashboardTableProps,
         snackbarNotificationProps,
@@ -28,7 +28,7 @@ const EmployeesDashboardContainer = () => {
     const error: string = "esto es un mensaje de error de prueba, LIC TAPIAAAAAAAAAAA";
 
     return (
-        <React.Fragment>          
+        <React.Fragment>
             {/* Client Header - Sustituir por DashboardHeader */}
             <DashboardHeader {...dashboardHeaderProps} />
             {/* Alert Message if exist error*/}
@@ -36,15 +36,10 @@ const EmployeesDashboardContainer = () => {
                 <Alert severity="error" sx={{ mb: 3 }}>
                     {error}
                 </Alert>
-            )}    
+            )}
             {/* Clients table whit information*/}
             <CustomCard>
-                {/* Refactorizar esto debe ser un children lo demas es estatico para las demas entidades */}
-                {dashboardTableProps.data.total === 0 ? (
-                    <EmptyDashboardTable />
-                ) : (
-                    <DashboardTable {...dashboardTableProps} />
-                )}
+                <DashboardTable {...dashboardTableProps} />
             </CustomCard>
             {/* Dialog to confirm delete item selected*/}
             <ModalDeleteItemConfirmDialog {...modalDeleteItemConfirmProps} />

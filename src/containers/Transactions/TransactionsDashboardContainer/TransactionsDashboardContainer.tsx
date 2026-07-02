@@ -1,24 +1,22 @@
-import React from 'react'
-import DashboardHeader from '@/components/atoms/DashboardHeader/DashboardHeader';
-import { useCreditsDashboardState } from './state/useCreditsDashboardState';
 import CustomCard from '@/components/atoms/CustomCard/CustomCard';
-import DashboardTable from '@/components/molecules/Table/DahsboardTable/DashboardTable';
-import ModalDeleteItemConfirmDialog from '@/components/molecules/ModalDialog/ModalDeleteItemConfirmDialog/ModalDeleteItemConfirmDialog';
-import SnackbarNotification from '@/components/molecules/SnackbarNotification/SnackbarNotification';
-import { Fab } from '@mui/material';
+import { Alert, Fab } from '@mui/material';
+import React from 'react'
 import {
     Add as AddIcon
 } from '@mui/icons-material';
+import DashboardHeader from '@/components/atoms/DashboardHeader/DashboardHeader';
+import DashboardTable from '@/components/molecules/Table/DahsboardTable/DashboardTable';
+import ModalDeleteItemConfirmDialog from '@/components/molecules/ModalDialog/ModalDeleteItemConfirmDialog/ModalDeleteItemConfirmDialog';
+import SnackbarNotification from '@/components/molecules/SnackbarNotification/SnackbarNotification';
+import { useTransactionsDashboardState } from './state/useTransactionsDashboardState';
 
-
-
-const CreditsDashboardContainer = () => {
+const TransactionsDashboardContainer = () => {
     const {
         dashboardHeaderProps,
         dashboardTableProps,
         snackbarNotificationProps,
         modalDeleteItemConfirmProps
-    } = useCreditsDashboardState();
+    } = useTransactionsDashboardState();
     const error: string = "esto es un mensaje de error de prueba, LIC TAPIAAAAAAAAAAA";
 
     return (
@@ -26,13 +24,17 @@ const CreditsDashboardContainer = () => {
             {/* Client Header - Sustituir por DashboardHeader */}
             <DashboardHeader {...dashboardHeaderProps} />
             {/* Alert Message if exist error*/}
-
-             {/* Credits table whit information*/}
+            {error && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                    {error}
+                </Alert>
+            )}
+            {/* Clients table whit information*/}
             <CustomCard>
                 {/* Refactorizar esto debe ser un children lo demas es estatico para las demas entidades */}
                 <DashboardTable {...dashboardTableProps} />
             </CustomCard>
-          {/* Dialog to confirm delete item selected*/}
+            {/* Dialog to confirm delete item selected*/}
             <ModalDeleteItemConfirmDialog {...modalDeleteItemConfirmProps} />
             {/* Dialog to confirm edit item selected - PENDING*/}
             {/* Add new customer button */}
@@ -55,4 +57,4 @@ const CreditsDashboardContainer = () => {
     )
 }
 
-export default CreditsDashboardContainer;
+export default TransactionsDashboardContainer;

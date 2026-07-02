@@ -38,9 +38,12 @@ export enum EmployeeColumnsEnum {
 }
 
 export enum TransactionColumnsEnum {
-    customers = "customers",
-    credits = "credits",
-    employees = "employees"
+    transactionName = "transactionName",
+    phoneNumber = "phoneNumber",
+    address = "address",
+    status = "status",
+    created = "created",
+    actions = "actions"
 }
 
 const ALL_CUSTOMER_RENDER_COLUMNS: IColumnsTable[] = [
@@ -73,10 +76,18 @@ const ALL_CREDITS_RENDER_COLUMNS: IColumnsTable[] = [
     { columnTableId: CreditColumnsEnum.actions, tittle: "Acciones" }
 ];
 
+const ALL_TRANSACTION_RENDER_COLUMNS: IColumnsTable[] = [
+    { columnTableId: TransactionColumnsEnum.transactionName, tittle: "Nombre Transaction" },
+    { columnTableId: TransactionColumnsEnum.phoneNumber, tittle: "Telefono" },
+    { columnTableId: TransactionColumnsEnum.address, tittle: "Direccion" },
+    { columnTableId: TransactionColumnsEnum.status, tittle: "Status" },
+    { columnTableId: TransactionColumnsEnum.created, tittle: "Registro" },
+    { columnTableId: TransactionColumnsEnum.actions, tittle: "Acciones" }
+];
+
 export const DashboardTableCatalog: Record<string, IColumnsTable[]> = {
     [DashboardTableCatalogEnum.customers]: ALL_CUSTOMER_RENDER_COLUMNS,
     [DashboardTableCatalogEnum.credits]: ALL_CREDITS_RENDER_COLUMNS,
     [DashboardTableCatalogEnum.employees]: ALL_EMPLOYEE_RENDER_COLUMNS,
-    [DashboardTableCatalogEnum.transactions]: []
-
+    [DashboardTableCatalogEnum.transactions]: ALL_TRANSACTION_RENDER_COLUMNS
 }

@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://TransactionTable",
+    "title": "TransactionTable",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "transactionId": {
+            "type": "string"
+        },
+        "created": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "phoneNumber": {
+            "type": "string"
+        },
+        "address": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "transactionId",
+        "created",
+        "name",
+        "lastName",
+        "phoneNumber",
+        "address",
+        "status"
+    ]
+}

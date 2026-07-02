@@ -9,6 +9,8 @@ import { EmployeeTable } from '@/types/EmployeeTable';
 import { EmployeeCells } from '../CustomCells/EmployeeCells/EmployeeCells';
 import { CreditTable } from '@/types/CreditTable';
 import { CreditCells } from '../CustomCells/CreditCells/CreditsCells';
+import { TransactionTable } from '@/types/TransactionTable';
+import { TransactionCells } from '../CustomCells/TransactionCells/TransactionCells';
 
 export interface DashboardTableBodyStateProps {
     renderColumnsTable: IColumnsTable[];
@@ -101,6 +103,32 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             </React.Fragment>
         )
     }
+    const buildTableBodyTransactions = (data: {
+        records: Entities[],
+        total: number,
+        entityName: DashboardTableCatalogEnum
+    }) => {
+        return (
+            <React.Fragment>
+                {data.records.map((record: Entities, index) => {
+                    const transaction: TransactionTable = record as TransactionTable;
+                    return (
+                        <TableRow key={`TableRow_${data.entityName}_${index}`}>
+                            {props.renderColumnsTable.map((column: IColumnsTable, indexCell: number) => (
+                                <TransactionCells
+                                    key={`TransactionCell_${column.columnTableId}_${transaction.transactionId}_${indexCell}`}
+                                    columnTable={column}
+                                    transaction={transaction}
+                                    handleOnDeleteClick={props.handleOnDeleteClick}
+                                    handleOnEditClick={props.handleOnEditClick}
+                                />
+                            ))}
+                        </TableRow>
+                    )
+                })}
+            </React.Fragment>
+        )
+    }
     const buildTableBodyByEntityName = (data: {
         records: Entities[],
         total: number,
@@ -115,7 +143,7 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             case DashboardTableCatalogEnum.employees:
                 return buildTableBodyEmployee(data);
             case DashboardTableCatalogEnum.transactions:
-                return <></>;
+                return buildTableBodyTransactions(data);
             default:
                 return <></>;
         }
