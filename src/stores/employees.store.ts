@@ -6,8 +6,14 @@ import axios from "../shared/utils/axiosUtils"
 import { get } from 'lodash';
 import { EmployeeTable } from '@/types/EmployeeTable';
 import { SearchEmployeesRequest } from '@/types/SearchEmployeesRequest';
+import { Users } from '@/types/Users';
+
 
 interface EmployeeStoreState {
+    notification: {
+        message: string,
+        status: "info" | "warning" | "error"
+    },
     employeesData: {
         records: EmployeeTable[],
         total: number,
@@ -19,14 +25,16 @@ interface EmployeeStoreState {
         entityName: DashboardTableCatalogEnum
     }) => void,
     searchEmployeesData: (request: SearchEmployeesRequest) => Promise<void>
+    createUser: (request: Users) => Promise<void>
 
 
 }
 
 
-export const useEmployeeStore = create<EmployeeStoreState>()( 
+export const useEmployeeStore = create<EmployeeStoreState>()(
     persist(
         (set) => ({
+            notification: { message: "", status: "info" },
             employeesData: { records: [], total: 0, entityName: DashboardTableCatalogEnum.employees },
             setEmployeesData: (value: {
                 records: EmployeeTable[],
@@ -43,7 +51,18 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                         entityName: DashboardTableCatalogEnum.employees
                     }
                 }))
+            },
+            createUser: async (request: Users) => {
+                const response = await axios.post<{ mensaje: string, data: boolean }>("http://localhost:4000/authorizer/createUser", request);
+                console.log(response.data);
+                set(state => ({
+                    notification: {
+                        message: get(response.data, "mensaje", ""),
+                        status: get(response.data, "data", false) === true ? "info" : "error"
+                    }
+                }))
             }
+
         }),
         {
             name: "employee-storage",
@@ -51,3 +70,4 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
         }
     )
 )
+

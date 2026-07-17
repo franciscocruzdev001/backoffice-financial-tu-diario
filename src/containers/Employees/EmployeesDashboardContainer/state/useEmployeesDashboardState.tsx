@@ -107,7 +107,7 @@ export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
     /**
      * Pagination State
      */
-    const [page, setPage] = useState<number>(0);
+    const [page, setPage] = useState<number>(0); 
 
     const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5);
 
