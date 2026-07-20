@@ -39,7 +39,7 @@ const AutocompleteFormatField: React.FC<AutocompleteFormatFieldProps> = (props: 
         placeholder,
         rules = {}
     } = props;
-    console.log("EmailFormatInput-errors: ", errors);
+    //
     return (
         <Controller
             name={name}

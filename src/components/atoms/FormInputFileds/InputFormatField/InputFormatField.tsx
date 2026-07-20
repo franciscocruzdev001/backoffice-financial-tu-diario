@@ -11,7 +11,7 @@ import { useInputFormatFieldStyle } from './InputFormatField.style';
 
 export interface InputFormatFieldStateProps {
     control: Control<FieldValues, Object>;
-    errors: FieldErrors<UserRequest>;
+    errors: FieldErrors<any>;
     name: string;
     required: boolean;
     type?: string;
@@ -39,7 +39,7 @@ const InputFormatField: React.FC<InputFormatFieldProps> = ({
     rules = {}
 }: InputFormatFieldProps) => {
     const classes = useInputFormatFieldStyle();
-    console.log("EmailFormatInput-errors: ", errors);
+    //console.log("EmailFormatInput-errors: ", errors);
     return (
         <Controller
             name={name}

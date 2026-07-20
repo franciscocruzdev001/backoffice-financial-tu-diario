@@ -62,7 +62,6 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                     }
                 }))
             }
-
         }),
         {
             name: "employee-storage",
