@@ -1,4 +1,4 @@
-import { TableRow } from '@mui/material';
+import { Checkbox, TableCell, TableRow } from '@mui/material';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import React from 'react';
 import { CustomerCells } from '../CustomCells/CustomerCells/CustomerCells';
@@ -11,10 +11,12 @@ import { CreditTable } from '@/types/CreditTable';
 import { CreditCells } from '../CustomCells/CreditCells/CreditsCells';
 import { TransactionTable } from '@/types/TransactionTable';
 import { TransactionCells } from '../CustomCells/TransactionCells/TransactionCells';
+import { TableSelectionProps } from '../DahsboardTable/DashboardTable';
 
 export interface DashboardTableBodyStateProps {
     renderColumnsTable: IColumnsTable[];
     data: { records: Entities[], total: number, entityName: DashboardTableCatalogEnum }
+    selection?: TableSelectionProps;
 }
 
 export interface DashboardTableBodyFunctionsProps {
@@ -112,11 +114,26 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             <React.Fragment>
                 {data.records.map((record: Entities, index) => {
                     const transaction: TransactionTable = record as TransactionTable;
+                    const id = props.selection?.getId(transaction) ?? '';
+                    const isSelected = props.selection?.isSelected(id) ?? false;
+
                     return (
-                        <TableRow key={`TableRow_${data.entityName}_${index}`}>
+                        <TableRow
+                            key={`TableRow_${data.entityName}_${index}`}
+                            selected={isSelected}
+                        >
+                            {props.selection && (
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        checked={isSelected}
+                                        onChange={() => props.selection!.onToggleItem(id)}
+                                        inputProps={{ 'aria-label': `Seleccionar transacción ${id}` }}
+                                    />
+                                </TableCell>
+                            )}
                             {props.renderColumnsTable.map((column: IColumnsTable, indexCell: number) => (
                                 <TransactionCells
-                                    key={`TransactionCell_${column.columnTableId}_${transaction.transactionId}_${indexCell}`}
+                                    key={`TransactionCell_${column.columnTableId}_${transaction._id}_${indexCell}`}
                                     columnTable={column}
                                     transaction={transaction}
                                     handleOnDeleteClick={props.handleOnDeleteClick}
@@ -154,4 +171,4 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
     )
 }
 
-export default DashboardTableBody;  
+export default DashboardTableBody;

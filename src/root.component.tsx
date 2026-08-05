@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/styles';
 import './index.css';
 import theme from './theme.ts';
-
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router';
 import { ROUTES } from './shared/constants/routes.ts';
 import Authentication from './containers/Login/Authentication/Authentication.tsx';

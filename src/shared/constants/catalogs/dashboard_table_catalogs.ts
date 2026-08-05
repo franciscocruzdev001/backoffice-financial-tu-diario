@@ -38,11 +38,11 @@ export enum EmployeeColumnsEnum {
 }
 
 export enum TransactionColumnsEnum {
-    transactionName = "transactionName",
-    phoneNumber = "phoneNumber",
-    address = "address",
+    transactionType = "transactionType",
+    description = "description",
+    total = "total",
     status = "status",
-    created = "created",
+    createdAt = "createdAt",
     actions = "actions"
 }
 
@@ -77,11 +77,11 @@ const ALL_CREDITS_RENDER_COLUMNS: IColumnsTable[] = [
 ];
 
 const ALL_TRANSACTION_RENDER_COLUMNS: IColumnsTable[] = [
-    { columnTableId: TransactionColumnsEnum.transactionName, tittle: "Nombre Transaction" },
-    { columnTableId: TransactionColumnsEnum.phoneNumber, tittle: "Telefono" },
-    { columnTableId: TransactionColumnsEnum.address, tittle: "Direccion" },
+    { columnTableId: TransactionColumnsEnum.transactionType, tittle: "Tipo" },
+    { columnTableId: TransactionColumnsEnum.description, tittle: "Descripción" },
+    { columnTableId: TransactionColumnsEnum.total, tittle: "Monto" },
     { columnTableId: TransactionColumnsEnum.status, tittle: "Status" },
-    { columnTableId: TransactionColumnsEnum.created, tittle: "Registro" },
+    { columnTableId: TransactionColumnsEnum.createdAt, tittle: "Registro" },
     { columnTableId: TransactionColumnsEnum.actions, tittle: "Acciones" }
 ];
 

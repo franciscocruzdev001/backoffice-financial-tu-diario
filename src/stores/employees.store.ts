@@ -27,7 +27,6 @@ interface EmployeeStoreState {
     searchEmployeesData: (request: SearchEmployeesRequest) => Promise<void>
     createUser: (request: Users) => Promise<void>
 
-
 }
 
 

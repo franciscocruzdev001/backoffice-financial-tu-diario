@@ -1,4 +1,5 @@
 import {
+    Checkbox,
     Table,
     TableBody,
     TableCell,
@@ -24,12 +25,24 @@ function instanceOf<T>(value: unknown, fieldName: string): value is T {
     return false;
 }
 
+// Selección de filas — opcional, solo la usan las entidades que la necesiten
+// (por ahora Transactions).
+export interface TableSelectionProps {
+    isSelected: (id: string) => boolean;
+    isAllSelected: boolean;
+    isIndeterminate: boolean;
+    onToggleItem: (id: string) => void;
+    onToggleAll: () => void;
+    getId: (item: Entities) => string;
+}
+
 export interface DashboardTableStateProps {
     //filterOptions: Record<Category, string[]>;
     toolBarFilterProps: ToolbarDashboardFilterProps;
     tablePaginationProps: TablePaginationProps;
     renderColumnsTable: IColumnsTable[];
     data: { records: Entities[], total: number, entityName: DashboardTableCatalogEnum }
+    selection?: TableSelectionProps;
 }
 
 export interface DashboardTableFunctionsProps {
@@ -56,6 +69,16 @@ const DashboardTable: React.FC<DashboardTableProps> = (props: DashboardTableProp
                     <Table>
                         <TableHead>
                             <TableRow>
+                                {props.selection && (
+                                    <TableCell padding="checkbox">
+                                        <Checkbox
+                                            indeterminate={props.selection.isIndeterminate}
+                                            checked={props.selection.isAllSelected}
+                                            onChange={props.selection.onToggleAll}
+                                            inputProps={{ 'aria-label': 'Seleccionar todos' }}
+                                        />
+                                    </TableCell>
+                                )}
                                 {props.renderColumnsTable.map((column: IColumnsTable) => (
                                     <TableCell key={column.columnTableId}>
                                         <strong>{column.tittle}</strong>
@@ -69,6 +92,7 @@ const DashboardTable: React.FC<DashboardTableProps> = (props: DashboardTableProp
                                 data={props.data}
                                 handleOnEditClick={props.handleOnEditClick}
                                 handleOnDeleteClick={props.handleOnDeleteClick}
+                                selection={props.selection}
                             />
                         </TableBody>
                     </Table>

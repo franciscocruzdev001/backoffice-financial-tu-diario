@@ -1,11 +1,9 @@
-import { getDate, getFullName } from '@/shared/utils/ProcessDataUtils';
+import { getDate } from '@/shared/utils/ProcessDataUtils';
 import { Box, Chip, IconButton, TableCell, Tooltip, Typography } from '@mui/material';
 import React, { JSX } from 'react'
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Phone as PhoneIcon,
-  Work as WorkIcon
 } from '@mui/icons-material';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getCreditColorByStatus } from '@/shared/utils/ProcessStatusDataUtils';
@@ -24,42 +22,46 @@ export interface TransactionCellsFunctionsProps {
 
 export type TransactionCellsProps = TransactionCellsStateProps & TransactionCellsFunctionsProps;
 
+const formatAmount = (amount?: number, currency?: string) =>
+  new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: currency || 'MXN',
+  }).format(amount ?? 0);
+
 export const TransactionCells: React.FC<TransactionCellsProps> = (props: TransactionCellsProps) => {
   const cells: Record<TransactionColumnsEnum, JSX.Element | any> = {
-    [TransactionColumnsEnum.transactionName]: (
+    [TransactionColumnsEnum.transactionType]: (
       <Typography variant="body2" fontWeight={500}>
-        {getFullName(
-          props.transaction.name,
-          props.transaction.lastName
-        )}
+        {props.transaction.transactionType || 'Sin tipo'}
       </Typography>
     ),
-    [TransactionColumnsEnum.phoneNumber]: (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <PhoneIcon fontSize="small" color="action" />
-        {props.transaction.phoneNumber}
-      </Box>
-    ),
-    [TransactionColumnsEnum.address]: (
+    [TransactionColumnsEnum.description]: (
       <Typography variant="body2" color="text.secondary">
-        {props.transaction.address}
+        {props.transaction.description || '—'}
+      </Typography>
+    ),
+    [TransactionColumnsEnum.total]: (
+      <Typography variant="body2" fontWeight={500}>
+        {formatAmount(props.transaction.total, props.transaction.currency)}
       </Typography>
     ),
     [TransactionColumnsEnum.status]: (
       <Chip
-        label={props.transaction.status || 'activo'}
-        color={getCreditColorByStatus(props.transaction.status)}
+        label={props.transaction.status || 'CHARGE-PROCESS'}
+        color={getCreditColorByStatus(props.transaction.status || 'CHARGE-PROCESS')}
         size="small"
       />
     ),
-    [TransactionColumnsEnum.created]: (
+    [TransactionColumnsEnum.createdAt]: (
       <Typography variant="body2" color="text.secondary">
-        {getDate(props.transaction.created)}
+        {props.transaction.createdAt
+          ? getDate(new Date(props.transaction.createdAt).getTime())
+          : '—'}
       </Typography>
     ),
     [TransactionColumnsEnum.actions]: (
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Tooltip title="Editar empleado">
+        <Tooltip title="Editar transacción">
           <IconButton
             size="small"
             color="primary"
@@ -68,7 +70,7 @@ export const TransactionCells: React.FC<TransactionCellsProps> = (props: Transac
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Desactivar Empleado">
+        <Tooltip title="Eliminar transacción">
           <IconButton
             size="small"
             color="error"
