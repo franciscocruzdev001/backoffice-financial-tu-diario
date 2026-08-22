@@ -1,40 +1,47 @@
 import React, { useState } from 'react';
 import { IFormProps } from '@/shared/interfaces/IFormProps';
-import { useForm, useWatch } from 'react-hook-form';
-import { UserRequest } from '@/types/UserRequest';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { LoginRequest } from '@/types/LoginRequest';
+import { useAuthStore } from '@/stores/auth.store';
+import { get } from 'lodash';
 
 export interface IUseAuthenticationState {
     loading: boolean,
     error: string,
-    form: IFormProps<UserRequest> & {
-      handleOnSubmitLogin: () => void;
+    form: IFormProps<LoginRequest> & {
+      handleOnSubmitLogin: (event?: React.BaseSyntheticEvent) => void;
     }
 }
 
 export const useAuthenticationState = (): IUseAuthenticationState => {
-  const { 
-    control, 
-    formState: { errors }, 
-    reset,
-  } = useForm<UserRequest>({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<LoginRequest>({
     defaultValues: {
-      userName: "",
+      email: "",
       password: "",
-      rememberMe: false
     }
   });
-  //const dispatch = useDispatch();
-  const loginFormState = useWatch({ control });
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleOnSubmitLogin = () => {
+  const handleOnSubmitLogin = handleSubmit(async (loginFormState: LoginRequest) => {
     setLoading(true);
     setError("");
-    console.log("LoginFormState: ", loginFormState);
-    console.log("loading: ", loading);
-    console.log("error: ", error);
-  };
+    try {
+      await login(loginFormState);
+      navigate('/');
+    } catch (submitError) {
+      setError(get(submitError, "response.data.error", "No se pudo iniciar sesión, intenta de nuevo"));
+    } finally {
+      setLoading(false);
+    }
+  });
 
   return {
     loading,

@@ -31,7 +31,14 @@ export const ChipsArea: React.FC<ChipsAreaProps> = (props: ChipsAreaProps) => {
             ) : (
                 <>
                     {props.chipsData.map(({ category, value }) => {
-                        const label: string = `${category === "estatus" ? "Estatus" : "Mes"}: ${value}`
+                        const label: string =
+                            category === "estatus" ? `Estatus: ${value}` :
+                                category === "estatusCredito" ? `Estatus crédito: ${value}` :
+                                    category === "estatusTransaccion" ? `Estatus transacción: ${value}` :
+                                        category === "movimiento" ? `Movimiento: ${value}` :
+                                            category === "trabajador" ? `Trabajador: ${value}` :
+                                                category === "periodo" ? `Período: ${value}` :
+                                                    `Mes: ${value}`;
                         const statusColor: ChipColorEnum | string = category === "estatus" ? STATUS_CHIP_COLOR(value) : "";
                         const monthStyleColor: object = category === "registro" ? {
                             textTransform: "capitalize",
@@ -49,7 +56,7 @@ export const ChipsArea: React.FC<ChipsAreaProps> = (props: ChipsAreaProps) => {
                                     onDelete={() => props.handleRemoveChip(category, value)}
                                     size="small"
                                     variant="outlined"
-                                    {...!isEmpty(statusColor) ?     { color: statusColor as ChipColorEnum, sx: { textTransform: "capitalize" } } :
+                                    {...!isEmpty(statusColor) ? { color: statusColor as ChipColorEnum, sx: { textTransform: "capitalize" } } :
                                         !isEmpty(monthStyleColor) ? { sx: monthStyleColor } : {}
                                     }
                                 />

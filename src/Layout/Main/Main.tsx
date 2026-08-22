@@ -1,11 +1,20 @@
 import { Box } from '@mui/material';
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import Navbar from '@/components/molecules/Navbar/Navbar';
 import { useMainState } from './state/useMainState';
 import Sidebar from '@/components/molecules/Sidebar/Sidebar';
+import { useAuthStore } from '@/stores/auth.store';
+import { ROUTES } from '@/shared/constants/routes';
 
 const Main = () => {
   const { userRoleInfo, navbar, sidebar } = useMainState();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // Sin sesión iniciada, no hay nada que mostrar detrás del layout principal
+  if (!isAuthenticated) {
+    return <Navigate to={ROUTES.AUTHENTICATION + ROUTES.LOGIN} replace />;
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/*Barra de navegacion*/}

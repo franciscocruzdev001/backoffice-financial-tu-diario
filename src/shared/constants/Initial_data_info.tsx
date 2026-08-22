@@ -7,39 +7,21 @@ import {
     Payment as PaymentIcon,
     Work as WorkIcon,
     PersonAdd as PersonAddIcon,
-    AdfScanner as AdfScannerIcon,
     Add as AddIcon,
-    Search as SearchIcon,
-    CreditCard as CreditCardIcon,
-    Assessment as ReportIcon
 } from '@mui/icons-material';
 
-const ALL_REPORT_SUBMENU_ITEMS_TEST: IFinancialMenuItem[] = [
-    {
-        tittle: 'Tarjetas de Pago',
-        subtittle: 'Generar tarjetas de control de pagos',
-        icon: <CreditCardIcon/>,
-        path: '/reportes/tarjetas-pago'
-    },
-];
-
-const ALL_CLIENT_SUBMENU_ITEMS_TEST: IFinancialMenuItem[] = [
-    { tittle: "Lista de Clientes", subtittle: "Ver todos los clientes", icon: <PeopleIcon/>, path: "/clientes" },
-    { tittle: "Nuevo Cliente", subtittle: "Registrar cliente nuevo", icon: <AddIcon/>, path: "/clientes/nuevo" },
-    { tittle: "Historial y Búsqueda", subtittle: "Buscar cliente y ver historial", icon: <SearchIcon/>, path: "/clientes/historial" }
-];
-
-const ALL_MENU_ITEMS_TEST: IFinancialMenuItem[] = [
-    { tittle: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { tittle: "Clientes", icon: <PeopleIcon/>, financialSubmenuItems: ALL_CLIENT_SUBMENU_ITEMS_TEST },
-    { tittle: "Préstamos", icon: <LoanIcon/>, path: "/prestamos" },
-    { tittle: "Pagos", icon: <PaymentIcon/>, path: "/pagos" },
-    { tittle: "Trabajadores", icon: <WorkIcon/>, path: "/trabajadores" },
-    { tittle: "Moratorios", icon: <PersonAddIcon/>, path: "/moratorios" },
-    { tittle: "Caja", icon: <AdfScannerIcon/>, path: "/caja" },
-    { tittle: "DashTrabajadores", icon: <AdfScannerIcon/>, path: "/DashTrabajador" },
-    { tittle: "Recolección Trabajadores", icon: <AdfScannerIcon/>, path: "/recoleccion-trabajador" },
-    { tittle: "Reportes", icon: <ReportIcon/>, financialSubmenuItems: ALL_REPORT_SUBMENU_ITEMS_TEST }
+// Un item por cada ruta real definida en root.component.tsx — nada de rutas
+// que todavía no tienen vista/container detrás.
+const ALL_MENU_ITEMS: IFinancialMenuItem[] = [
+    { tittle: "Dashboard", icon: <DashboardIcon />, path: "/" },
+    { tittle: "Trabajadores", icon: <WorkIcon/>, path: "/employee-dashboard" },
+    { tittle: "Clientes", icon: <PeopleIcon/>, path: "/customer-dashboard" },
+    { tittle: "Créditos", icon: <LoanIcon/>, path: "/credit-dashboard" },
+    { tittle: "Transacciones", icon: <PaymentIcon/>, path: "/transaction-dashboard" },
+    { tittle: "Nuevo Trabajador", icon: <PersonAddIcon/>, path: "/employee-create" },
+    { tittle: "Nuevo Cliente", icon: <AddIcon/>, path: "/customer-create" },
+    { tittle: "Nuevo Crédito", icon: <AddIcon/>, path: "/credit-create" },
+    { tittle: "Nueva Transacción", icon: <AddIcon/>, path: "/transaction-create" },
 ];
 
 
@@ -48,5 +30,5 @@ export const INITIAL_USER_ROL_INFO: IUserRoleInfo = {
     firstName: "Usuario",
     lastName: "prueba",
     userName: "",
-    financialMenuItems: ALL_MENU_ITEMS_TEST
+    financialMenuItems: ALL_MENU_ITEMS
 };

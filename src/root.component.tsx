@@ -1,4 +1,4 @@
-import { Component, StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/styles';
 import './index.css';
@@ -18,28 +18,27 @@ import EmployeeContainer from './containers/Employees/EmployeeContainer/Employee
 
 
 export const appRouter = createBrowserRouter([
-  //Main route
-  { path: '/', element: <Main/>, 
-    children: [
-      { index: true, path: "dashboard", Component: DashnboardHome },
-      // DASHBOARD'S
-      { index: true, path: "employee-dashboard", Component: EmployeesDashboardContainer },
-      { index: true, path: "customer-dashboard", Component: CustomersDashboardContainer },
-      { index: true, path: "credit-dashboard", Component: CreditsDashboardContainer },
-      { index: true, path: "transaction-dashboard", Component: TransactionsDashboardContainer },
-      // ENTITIES FORMS
-      { index: true, path: "employee-create", Component: EmployeeContainer },
-      { index: true, path: "customer-create", Component: CustomerContainer },
-      { index: true, path: "credit-create", Component: CustomerContainer },
-      { index: true, path: "transaction-create", Component: CustomerContainer }
-    ]
-  },
-  /*//Main route
-  { path: '/', element: <Navigate to={ROUTES.AUTHENTICATION} /> },
   //Auth routes
-  { path: ROUTES.AUTHENTICATION, element: <Navigate to={ ROUTES.AUTHENTICATION + ROUTES.LOGIN} /> },
+  { path: ROUTES.AUTHENTICATION, element: <Navigate to={ROUTES.AUTHENTICATION + ROUTES.LOGIN} /> },
   { path: ROUTES.AUTHENTICATION + ROUTES.LOGIN, Component: Authentication },
   { path: ROUTES.AUTHENTICATION + ROUTES.RESET_PASSWORD, Component: ResetPassword },
+  //Main route
+  { path: '/', element: <Main/>,
+    children: [
+      { index: true, Component: DashnboardHome },
+      // DASHBOARD'S
+      { path: "employee-dashboard", Component: EmployeesDashboardContainer },
+      { path: "customer-dashboard", Component: CustomersDashboardContainer },
+      { path: "credit-dashboard", Component: CreditsDashboardContainer },
+      { path: "transaction-dashboard", Component: TransactionsDashboardContainer },
+      // ENTITIES FORMS
+      { path: "employee-create", Component: EmployeeContainer },
+      { path: "customer-create", Component: CustomerContainer },
+      { path: "credit-create", Component: CustomerContainer },
+      { path: "transaction-create", Component: CustomerContainer }
+    ]
+  },
+  /*
   //Customers routes
   { path: ROUTES.CUSTOMER, element: <Navigate to={ ROUTES.CUSTOMER + ROUTES.CUSTOMER_CREATE} /> },
   { path: ROUTES.CUSTOMER + ROUTES.CUSTOMER_CREATE, Component: Authentication },

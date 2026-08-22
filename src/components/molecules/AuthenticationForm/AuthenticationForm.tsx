@@ -1,6 +1,6 @@
 import React from 'react'
 import { Control, FieldErrors, FieldValues } from 'react-hook-form';
-import { UserRequest } from '../../../types/UserRequest';
+import { LoginRequest } from '../../../types/LoginRequest';
 import { Alert, Box, Button, Typography } from '@mui/material';
 import { AuthenticationFormFields } from '../../../shared/constants/AuthenticationFormEnum';
 import InputFormatField from '@/components/atoms/FormInputFileds/InputFormatField/InputFormatField';
@@ -8,13 +8,13 @@ import { useAuthenticationFormStyle } from './AuthenticationForm.style';
 
 export interface AuthenticationFormStateProps {
   control: Control<FieldValues | any, object>;
-  errors: FieldErrors<UserRequest>;
+  errors: FieldErrors<LoginRequest>;
   loading: boolean;
   error: string;
 }
 
 export interface AuthenticationFormFunctionsProps {
-  onSubmit: () => void;
+  onSubmit: (event?: React.BaseSyntheticEvent) => void;
 }
 
 export type AuthenticationFormProps = AuthenticationFormStateProps & AuthenticationFormFunctionsProps;
@@ -53,20 +53,21 @@ const AuthenticationForm: React.FC<AuthenticationFormProps> = (props: Authentica
           </Alert>
         )}
 
-        {/* Campo Username con mejor diseño */}
+        {/* Campo Email con mejor diseño */}
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="body2"
             sx={{ ...classes.userNameLabel }}
           >
-            Nombre de usuario
+            Correo electrónico
           </Typography>
           <InputFormatField
-            name={AuthenticationFormFields.USER_NAME}
+            name={AuthenticationFormFields.EMAIL}
             control={props.control}
             errors={props.errors}
             required={true}
-            placeholder="Ingrese su nombre de usuario"
+            type="email"
+            placeholder="Ingrese su correo electrónico"
             sx={{ ...classes.userNameInput }}
           />
         </Box>
@@ -88,10 +89,10 @@ const AuthenticationForm: React.FC<AuthenticationFormProps> = (props: Authentica
         </Box>
 
         {/* Botón con diseño premium */}
+        {/* El submit real ocurre por el onSubmit del <form> (así también funciona con Enter) */}
         <Button
           type="submit"
           loading={props.loading}
-          onClick={props.onSubmit}
           sx={{ ...classes.loginButton }}
         >
           {props.loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}

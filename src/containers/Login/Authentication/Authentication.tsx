@@ -25,7 +25,7 @@ const Authentication = () => {
                     {/* Paper container con efectos glassmorphism */}
                     <Paper elevation={0} sx={{...classes.paperContainer}}>
                         {/* Formulario Login */}
-                        <form>
+                        <form onSubmit={form.handleOnSubmitLogin}>
                             <AuthenticationForm
                                 control={form.control}
                                 errors={form.errors}

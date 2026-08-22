@@ -9,6 +9,9 @@ import { ChipsArea } from '../ChipsArea/ChipsArea';
 import { isEmpty } from 'lodash';
 import { useToolbarDashboardFilterState } from './state/useToolbarDashboardFilterState';
 import { Category } from '@/shared/constants/table_types_data';
+import { DateRangeValue } from '../DateRangeSection/DateRangeSection';
+import { EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallets.catalog';
+import { CustomerOption } from '@/shared/constants/catalogs/customers.catalog';
 
 
 /*const FILTER_OPTIONSV2 = [
@@ -34,10 +37,23 @@ import { Category } from '@/shared/constants/table_types_data';
 
 export interface ToolbarDashboardFilterStateProps {
     filterOptions: Record<Category, string[]>;
+    dateRange?: DateRangeValue; 
+    // Opt-in: solo la vista que lo necesite (Transactions) provee este catálogo,
+    // así el Autocomplete de trabajador no aparece en las demás vistas
+    employeeOptions?: EmployeeWalletOption[];
+    // Opt-in: solo la vista que lo necesite (Credits) provee este catálogo,
+    // así el Autocomplete de cliente no aparece en las demás vistas
+    customerOptions?: CustomerOption[];
+
 }
 
 export interface ToolbarDashboardFilterFunctionsProps {
-    handleOnChangeFilters: (documentFilter: Record<string, { category: string, value: string }[]>) => void
+    handleOnChangeFilters: (
+        documentFilter: Record<string, { category: string, value: string }[]>,
+        dateRange: DateRangeValue,
+        selectedEmployee: EmployeeWalletOption | null,
+        selectedCustomer: CustomerOption | null
+    ) => void
 }
 
 export type ToolbarDashboardFilterProps = ToolbarDashboardFilterStateProps & ToolbarDashboardFilterFunctionsProps;
@@ -75,6 +91,11 @@ export const ToolbarDashboardFilter: React.FC<ToolbarDashboardFilterProps> = (pr
                 onClose={() => filterByModal.showFilterByModal(false)}
                 options={props.filterOptions}
                 currentFilters={filterByModal.activeFilters}
+                dateRange={filterByModal.dateRange}
+                employeeOptions={props.employeeOptions}
+                selectedEmployeeId={filterByModal.selectedEmployeeId}
+                customerOptions={props.customerOptions}
+                selectedCustomerId={filterByModal.selectedCustomerId}
                 handleApplyFilters={filterByModal.handleApplyFilters}
             />
         </React.Fragment>

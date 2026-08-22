@@ -2,24 +2,43 @@ import { useEffect, useState } from 'react';
 import { FilterByModalProps } from '../FilterByModal';
 import { defaultTo, isEqual } from 'lodash';
 import { SnippetFolder } from '@mui/icons-material';
+import { type DateRangeValue } from '@/components/molecules/Table/Filter/DateRangeSection/DateRangeSection';
+
+const DEFAULT_DATE_RANGE: DateRangeValue = { preset: 'TODOS', range: null };
 
 export interface IUseFilterByModalState {
     draft: { category: string, value: string }[];
+    draftDateRange: DateRangeValue;
+    draftEmployeeId: string | null;
+    draftCustomerId: string | null;
     totalActive: number;
     handleOnReset: () => void;
     toggle: (category: string, value: string) => void;
     cleanAllFilters: (category: string) => void;
+    onDateRangeChange: (value: DateRangeValue) => void;
+    onEmployeeChange: (employeeId: string | null) => void;
+    onCustomerChange: (customerId: string | null) => void;
     onApply: () => void;
 }
 
 export const useFilterByModalState = (props: FilterByModalProps): IUseFilterByModalState => {
     const [draft, setDraft] = useState<{ category: string, value: string }[]>([]);
-    const totalActive = draft.length;
+    const [draftDateRange, setDraftDateRange] = useState<DateRangeValue>(props.dateRange ?? DEFAULT_DATE_RANGE);
+    const [draftEmployeeId, setDraftEmployeeId] = useState<string | null>(props.selectedEmployeeId ?? null);
+    const [draftCustomerId, setDraftCustomerId] = useState<string | null>(props.selectedCustomerId ?? null);
+
+    // totalActive cuenta también el rango de fecha si está activo (no es "TODOS")
+    // y el trabajador seleccionado, si hay alguno
+    // y el cliente seleccionado, si hay alguno
+    const totalActive = draft.length + (draftDateRange.preset !== 'TODOS' ? 1 : 0) + (draftEmployeeId ? 1 : 0) + (draftCustomerId ? 1 : 0);
 
     //const handleReset = () => setDraft({ estatus: [], registro: [] });
 
     const handleOnReset = () => {
         setDraft([]);
+        setDraftDateRange(DEFAULT_DATE_RANGE);
+        setDraftEmployeeId(null);
+        setDraftCustomerId(null);
         /*setDraftV2((prev) => ([
             ...prev.map((item) => (
                 { category: item.category, values: [] }
@@ -85,10 +104,25 @@ export const useFilterByModalState = (props: FilterByModalProps): IUseFilterByMo
         ]));*/
     }
 
+    const onDateRangeChange = (value: DateRangeValue) => {
+        setDraftDateRange(value);
+    };
+
+    const onEmployeeChange = (employeeId: string | null) => {
+        setDraftEmployeeId(employeeId);
+    };
+
+    const onCustomerChange = (customerId: string | null) => {
+        setDraftCustomerId(customerId);
+    };
+
     const onApply = () => {
         //props.handleApplyFilters(draft);
-        console.log("onApply-draft:",draft);
-        props.handleApplyFilters(draft);
+        console.log("onApply-draft:", draft);
+        console.log("onApply-draftDateRange:", draftDateRange);
+        console.log("onApply-draftEmployeeId:", draftEmployeeId);
+        console.log("onApply-draftCustomerId:", draftCustomerId);
+        props.handleApplyFilters(draft, draftDateRange, draftEmployeeId, draftCustomerId);
     };
 
     /*useEffect(() => {
@@ -102,8 +136,11 @@ export const useFilterByModalState = (props: FilterByModalProps): IUseFilterByMo
         //console.log("useEffect_open: ", props.open);
         //console.log("useEffect_currentFilters: ", props.currentFilters);
         setDraft([...props.currentFilters]);
+        setDraftDateRange(props.dateRange ?? DEFAULT_DATE_RANGE);
+        setDraftEmployeeId(props.selectedEmployeeId ?? null);
+        setDraftCustomerId(props.selectedCustomerId ?? null);
         //if (props.open) setDraft({ ...props.currentFilters });
-    }, [props.currentFilters]);
+    }, [props.currentFilters, props.dateRange, props.selectedEmployeeId, props.selectedCustomerId]);
 
     /*useEffect(() => {
         if (props.open) setDraft([...props.currentFiltersV2]);
@@ -111,10 +148,16 @@ export const useFilterByModalState = (props: FilterByModalProps): IUseFilterByMo
 
     return {
         draft,
+        draftDateRange,
+        draftEmployeeId,
+        draftCustomerId,
         totalActive,
         handleOnReset,
         toggle,
         cleanAllFilters,
+        onDateRangeChange,
+        onEmployeeChange,
+        onCustomerChange,
         onApply
     }
 }

@@ -9,15 +9,21 @@ import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { useTransactionStore } from '@/stores/transactions.store';
 import { FiltersItems } from '@/types/SearchTransactionsRequest';
 import { TransactionTable } from '@/types/TransactionTable';
+import { type DateRangeValue } from '@/components/molecules/Table/Filter/DateRangeSection/DateRangeSection';
+import { EMPLOYEE_WALLET_OPTIONS, EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallets.catalog';
+import { useAuthStore } from '@/stores/auth.store';
 import { defaultTo, get } from 'lodash';
 import { useEffect, useState } from 'react'
 
 // Mismo enum real de status que usa transactionsSchema
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
-    "estatus": ["CHARGE-PROCESS", "SLOW-PAY", "PAID", "RESTRUCTURED"],
-    "registro": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-};
+    "estatus": ["pending", "approved", "cancelled"],
+    "movimiento": ["credit", "payment", "transfer", "deposit"],
+    //"registro": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    //  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+}
+
+const DEFAULT_DATE_RANGE: DateRangeValue = { preset: 'TODOS', range: null };
 
 export interface ApproveTransactionsButtonProps {
     label: string;
@@ -47,13 +53,21 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             * Transaction data state
             */
     const { transactionsData, searchTransactionsData } = useTransactionStore();
+    // creditorCompanyId real del admin autenticado (no un id de prueba fijo,
+    // cada admin solo debe ver las transacciones de su propia empresa)
+    const creditorCompanyId = useAuthStore((state) => state.user?.creditorCompanyId ?? '');
     /**
          * Filter State
          */
     const [filterItems, setFilterItems] = useState<FiltersItems>({
-        creditorCompanyId: "123",
+        creditorCompanyId,
         status: [],
     });
+    /**
+     * Date range filter state — se guarda aparte para poder reflejar el
+     * valor actual seleccionado de vuelta en el modal (dateRange prop)
+     */
+    const [dateRange, setDateRange] = useState<DateRangeValue>(DEFAULT_DATE_RANGE);
     /**
      * Pagination State
      */
@@ -180,15 +194,38 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         console.log("handleOnClick-customer: ", item);
         console.log("Actualizando...");
     };
-    const handleOnChangeFilters = (documentFilter: Record<string, { category: string, value: string }[]>) => {
+    const handleOnChangeFilters = (
+        documentFilter: Record<string, { category: string, value: string }[]>,
+        newDateRange: DateRangeValue,
+        selectedEmployee: EmployeeWalletOption | null
+    ) => {
         console.log("handleOnChangeFilters-documentFilter:", documentFilter);
+        console.log("handleOnChangeFilters-newDateRange:", newDateRange);
+        console.log("handleOnChangeFilters-selectedEmployee:", selectedEmployee);
 
         const tempFilterItems: FiltersItems = {
-            status: defaultTo(documentFilter["estatus"], []).map((filter: { category: string, value: string }) => filter.value),
-            creditorCompanyId: "123"
+            status: defaultTo(documentFilter["estatus"], []).map((filter) => filter.value),
+            transactionType: defaultTo(documentFilter["movimiento"], []).map((filter) => filter.value),
+            creditorCompanyId,
+            ...(newDateRange.range ? {
+                createdRangeDate: {
+                    startDate: newDateRange.range.startDate,
+                    endDate: newDateRange.range.endDate,
+                },
+            } : {}),
+            // Si hay un trabajador seleccionado, acota la búsqueda a su wallet
+            // (mismo mecanismo que ya usa el $or de sourceAccount/destinationAccount
+            // en _buildSearchFiltersByTransactions del backend).
+            ...(selectedEmployee ? {
+                accountInformacion: {
+                    walletId: selectedEmployee.walletId,
+                    accountNumber: selectedEmployee.accountNumber,
+                },
+            } : {}),
         }
 
         setFilterItems(tempFilterItems);
+        setDateRange(newDateRange);
         setPage(0);
         clearSelection();
 
@@ -261,6 +298,10 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         dashboardTableProps: {
             toolBarFilterProps: {
                 filterOptions: CATALOG_FILTER_OPTIONS,
+                dateRange,
+                // Único lugar de la app donde se pasa employeeOptions al toolbar,
+                // por eso el Autocomplete de trabajador solo aparece en Transactions.
+                employeeOptions: EMPLOYEE_WALLET_OPTIONS,
                 handleOnChangeFilters
             },
             tablePaginationProps: {

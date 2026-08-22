@@ -3,25 +3,26 @@ import { ChipColorEnum } from "../constants/PropertiesEnumMuiComponets";
 /*
 *   Estatus dashboard
 */
-    // ✅ Función para obtener el color del status del cliente; status: "activo" | "moroso" | "bloqueado" | "renovacion"
+    // ✅ Color hex para el Avatar del cliente en CreditInformationItem
     export const getClientColorByStatus = (status: StatusEnum) => {
         const colors = {
         [StatusEnum.CHARGE_PROCESS]: '#2196f3',
+        [StatusEnum.SLOW_PAY]: '#f44336',
         [StatusEnum.PAID]: '#4caf50',
         [StatusEnum.RESTRUCTURED]: '#ff9800',
-        [StatusEnum.STALLED]: '#f44336'
         };
         return colors[status] || '#1976d2';
     };
 
-    export const getCreditColorByStatus = (status: string) => {
-        const colors: any = {
-        activo: 'success',
-        moroso: 'error',
-        bloqueado: 'warning',
-        renovacion: 'info'
+    // ✅ Color de MUI Chip para el status del crédito en la tabla (CreditCells)
+    export const getCreditColorByStatus = (status: string): ChipColorEnum => {
+        const colors: Record<string, ChipColorEnum> = {
+        [StatusEnum.CHARGE_PROCESS]: ChipColorEnum.INFO,
+        [StatusEnum.SLOW_PAY]: ChipColorEnum.ERROR,
+        [StatusEnum.PAID]: ChipColorEnum.SUCCES,
+        [StatusEnum.RESTRUCTURED]: ChipColorEnum.WARNING,
         };
-        return colors[status] || 'default';
+        return colors[status] || ChipColorEnum.DEFAULT;
     };
 
 /* 

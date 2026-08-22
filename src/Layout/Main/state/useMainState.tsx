@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
 import { IUserRoleInfo } from '@/infrastructure/interfaces/Main/IUserRoleInfo';
 import { INITIAL_USER_ROL_INFO } from '@/shared/constants/Initial_data_info';
+import { useAuthStore } from '@/stores/auth.store';
+import { ROUTES } from '@/shared/constants/routes';
+import { useNavigate } from 'react-router-dom';
 
 export interface IUseMainState {
-    /*loading: boolean,
-    error: string,
-    form: IFormProps<UserRequest> & {
-      handleOnSubmitLogin: () => void;
-    }*/
     userRoleInfo: IUserRoleInfo,
     navbar: {
       handleLogout: () => void;
@@ -18,20 +15,26 @@ export interface IUseMainState {
 }
 
 export const useMainState = (): IUseMainState => {
-  //const dispatch = useDispatch();
-  const [userRoleInfo, setUserRoleInfo] = useState<IUserRoleInfo>(INITIAL_USER_ROL_INFO);
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  // El backend solo regresa userName (no first/last name por separado),
+  // así que se usa como fullName mientras no exista esa info en LoginResponse
+  const userRoleInfo: IUserRoleInfo = {
+    ...INITIAL_USER_ROL_INFO,
+    fullName: user?.userName ?? INITIAL_USER_ROL_INFO.fullName,
+    firstName: user?.userName ?? INITIAL_USER_ROL_INFO.firstName,
+    userName: user?.userName ?? INITIAL_USER_ROL_INFO.userName,
+  };
 
   const handleLogout = () => {
-    console.log("userRoleInfo: ", userRoleInfo);
-    console.log("cerrando session...");
+    logout();
+    navigate(ROUTES.AUTHENTICATION + ROUTES.LOGIN);
   };
 
   const handleOnNavigation = (path: string) => {
-    /*
-      navigate(path);
-    if (props.onClose) props.onClose();
-    */
-    console.log("handleOnNavigation-path: ", path)
+    navigate(path);
   };
 
   return {

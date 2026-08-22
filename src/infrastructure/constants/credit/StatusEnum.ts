@@ -1,6 +1,6 @@
 export enum StatusEnum {
     CHARGE_PROCESS = "charge_process",
+    SLOW_PAY = "slow_pay",    
     PAID = "paid",
-    RESTRUCTURED = "restructured",
-    STALLED = "stalled"
+    RESTRUCTURED = "reestructured", 
 }
