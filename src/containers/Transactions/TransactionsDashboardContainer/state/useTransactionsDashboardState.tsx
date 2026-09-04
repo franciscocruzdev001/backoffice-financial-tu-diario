@@ -3,7 +3,10 @@ import { ModalDeleteItemConfirmDialogProps } from '@/components/molecules/ModalD
 import { SnackbarNotificationProps } from '@/components/molecules/SnackbarNotification/SnackbarNotification';
 import { DashboardTableProps, TableSelectionProps } from '@/components/molecules/Table/DahsboardTable/DashboardTable';
 import { DashboardTableCatalog, DashboardTableCatalogEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
-import { ModalApproveTransactionsDialogProps, CurrencyTotal } from '@/components/molecules/ModalDialog/ModalApproveTransactionsDialog/ModalApproveTransactionsDialog';
+import { ModalApproveTransactionsDialogProps, TransactionTypeTotal } from '@/components/molecules/ModalDialog/ModalApproveTransactionsDialog/ModalApproveTransactionsDialog';
+import { ModalPreviewTransactionsDialogProps } from '@/components/molecules/ModalDialog/ModalPreviewTransactionsDialog/ModalPreviewTransactionsDialog';
+import { ModalRejectTransactionsDialogProps } from '@/components/molecules/ModalDialog/ModalRejectTransactionsDialog/ModalRejectTransactionsDialog';
+import { TransactionStatusEnum } from '@/infrastructure/constants/credit/TransactionStatusEnum';
 import { Category, Entities } from '@/shared/constants/table_types_data';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { useTransactionStore } from '@/stores/transactions.store';
@@ -37,6 +40,10 @@ export interface RejectTransactionsButtonProps {
     selectedCount: number;
     onClick: () => void;
 }
+export interface PreviewTransactionsButtonProps {
+    visible: boolean;
+    onClick: () => void;
+}
 
 export interface IUseTransactionsDashboardState {
     dashboardHeaderProps: DashboardHeaderProps,
@@ -45,14 +52,17 @@ export interface IUseTransactionsDashboardState {
     modalDeleteItemConfirmProps: ModalDeleteItemConfirmDialogProps,
     approveTransactionsButtonProps: ApproveTransactionsButtonProps,
     rejectTransactionsButtonProps: RejectTransactionsButtonProps
+    previewTransactionsButtonProps: PreviewTransactionsButtonProps,
     modalApproveTransactionsProps: ModalApproveTransactionsDialogProps,
+    modalPreviewTransactionsProps: ModalPreviewTransactionsDialogProps,
+    modalRejectTransactionsProps: ModalRejectTransactionsDialogProps,
 }
 
 export const useTransactionsDashboardState = (): IUseTransactionsDashboardState => {
     /**
             * Transaction data state
             */
-    const { transactionsData, searchTransactionsData } = useTransactionStore();
+    const { transactionsData, searchTransactionsData, approveTransactionsOperations } = useTransactionStore();
     // creditorCompanyId real del admin autenticado (no un id de prueba fijo,
     // cada admin solo debe ver las transacciones de su propia empresa)
     const creditorCompanyId = useAuthStore((state) => state.user?.creditorCompanyId ?? '');
@@ -77,6 +87,8 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.transactions]);
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
     const [showModalApproveConfirm, setShowModalApproveConfirm] = useState<boolean>(false);
+    const [showModalPreview, setShowModalPreview] = useState<boolean>(false);
+    const [showModalRejectConfirm, setShowModalRejectConfirm] = useState<boolean>(false);
     const [approvingTransactions, setApprovingTransactions] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<TransactionTable>({
         _id: "123",
@@ -130,14 +142,19 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         (t) => t._id && selectedIds.has(t._id)
     );
 
-    const totalsByCurrency: CurrencyTotal[] = Object.entries(
-        selectedTransactions.reduce<Record<string, number>>((acc, t) => {
-            const currency = t.currency ?? 'MXN';
-            acc[currency] = (acc[currency] ?? 0) + (t.total ?? 0);
+    const totalsByType: TransactionTypeTotal[] = Object.entries(
+        selectedTransactions.reduce<Record<string, { count: number; total: number }>>((acc, t) => {
+            const transactionType = t.transactionType ?? 'other';
+            const current = acc[transactionType] ?? { count: 0, total: 0 };
+            acc[transactionType] = { count: current.count + 1, total: current.total + (t.total ?? 0) };
             return acc;
         }, {})
-    ).map(([currency, total]) => ({ currency, total }));
+    ).map(([transactionType, { count, total }]) => ({ transactionType, count, total }));
 
+    // Si alguna de las seleccionadas ya está aprobada, no se puede volver a aprobar el lote.
+    const haySeleccionadaYaAprobada = selectedTransactions.some(
+        (t) => t.status === TransactionStatusEnum.APPROVED
+    );
 
     const clearSelection = () => setSelectedIds(new Set());
 
@@ -154,22 +171,50 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         setShowModalApproveConfirm(true);
     };
 
-    const handleConfirmApproveTransactions = () => {
-        console.log('Aprobar transacciones seleccionadas:', Array.from(selectedIds));
-        // TODO: aqui iria el endpoint real de aprobar las transacciones.
-        setShowModalApproveConfirm(false);
-        clearSelection();
+    const handleConfirmApproveTransactions = async () => {
+        setApprovingTransactions(true);
+        try {
+            await approveTransactionsOperations(Array.from(selectedIds));
+            setShowModalApproveConfirm(false);
+            clearSelection();
+            // Refresca la página actual para reflejar el nuevo status (approved).
+            searchTransactionsData({
+                filtersItems: filterItems,
+                pagination: { limit: rowsPerPageChange, pageNumber: page }
+            });
+        } catch (error) {
+            console.error('Error al aprobar transacciones:', error);
+        } finally {
+            setApprovingTransactions(false);
+        }
     };
 
     const handleCancelApproveTransactions = () => {
         setShowModalApproveConfirm(false);
     };
 
-    const handleRejectTransactions = () => {
+    const handleOpenPreview = () => {
+        setShowModalPreview(true);
+    };
+
+    const handleClosePreview = () => {
+        setShowModalPreview(false);
+    };
+
+    const handleOpenRejectConfirm = () => {
+        setShowModalRejectConfirm(true);
+    };
+
+    const handleConfirmRejectTransactions = () => {
         console.log('Rechazar transacciones seleccionadas:', Array.from(selectedIds));
         // TODO: aqui iria el endpoint rechazar/cancelar las transacciones.
+        setShowModalRejectConfirm(false);
         clearSelection();
-    }
+    };
+
+    const handleCancelRejectTransactions = () => {
+        setShowModalRejectConfirm(false);
+    };
 
     /**
         * 
@@ -339,7 +384,7 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         },
         approveTransactionsButtonProps: {
             label: selectedIds.size <= 1 ? 'Aprobar transacción' : `Aprobar ${selectedIds.size} transacciones`,
-            disabled: selectedIds.size === 0,
+            disabled: selectedIds.size === 0 || haySeleccionadaYaAprobada,
             selectedCount: selectedIds.size,
             onClick: handleOpenApproveConfirm,
         },
@@ -347,15 +392,32 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             label: selectedIds.size <= 1 ? 'Rechazar transacción' : `Rechazar ${selectedIds.size} transacciones`,
             disabled: selectedIds.size === 0,
             selectedCount: selectedIds.size,
-            onClick: handleRejectTransactions,
+            onClick: handleOpenRejectConfirm,
+        },
+        previewTransactionsButtonProps: {
+            visible: selectedIds.size > 0,
+            onClick: handleOpenPreview,
         },
         modalApproveTransactionsProps: {
             open: showModalApproveConfirm,
             transactionsCount: selectedIds.size,
-            totalsByCurrency,
+            totalsByType,
             loading: approvingTransactions,
             onConfirm: handleConfirmApproveTransactions,
             onCancel: handleCancelApproveTransactions,
+        },
+        modalPreviewTransactionsProps: {
+            open: showModalPreview,
+            totalsByType,
+            onClose: handleClosePreview,
+        },
+        modalRejectTransactionsProps: {
+            open: showModalRejectConfirm,
+            transactionsCount: selectedIds.size,
+            totalsByType,
+            loading: false,
+            onConfirm: handleConfirmRejectTransactions,
+            onCancel: handleCancelRejectTransactions,
         },
     }
 }

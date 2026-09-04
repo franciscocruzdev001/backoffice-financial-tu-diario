@@ -7,61 +7,42 @@ import {
     Typography,
     Box,
     Button,
-    CircularProgress,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { CheckCircle as CheckCircleIcon, Payments as PaymentsIcon } from '@mui/icons-material';
+import { Description as DescriptionIcon, Payments as PaymentsIcon } from '@mui/icons-material';
 import { TRANSACTION_TYPE_DISPLAY } from '@/shared/constants/catalogs/transaction_type.catalog';
+import type { TransactionTypeTotal } from '@/components/molecules/ModalDialog/ModalApproveTransactionsDialog/ModalApproveTransactionsDialog';
 
-export interface TransactionTypeTotal {
-    transactionType: string;
-    count: number;
-    total: number;
-}
-
-export interface ModalApproveTransactionsDialogStateProps {
+export interface ModalPreviewTransactionsDialogStateProps {
     open: boolean;
-    transactionsCount: number;
     totalsByType: TransactionTypeTotal[];
-    loading: boolean;
 }
 
-export interface ModalApproveTransactionsDialogFunctionsProps {
-    onConfirm: () => void;
-    onCancel: () => void;
+export interface ModalPreviewTransactionsDialogFunctionsProps {
+    onClose: () => void;
 }
 
-export type ModalApproveTransactionsDialogProps = ModalApproveTransactionsDialogStateProps & ModalApproveTransactionsDialogFunctionsProps;
+export type ModalPreviewTransactionsDialogProps = ModalPreviewTransactionsDialogStateProps & ModalPreviewTransactionsDialogFunctionsProps;
 
 const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 
-const ModalApproveTransactionsDialog: React.FC<ModalApproveTransactionsDialogProps> = ({
+const ModalPreviewTransactionsDialog: React.FC<ModalPreviewTransactionsDialogProps> = ({
     open,
-    transactionsCount,
     totalsByType,
-    loading,
-    onConfirm,
-    onCancel,
+    onClose,
 }) => {
     return (
-        <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ fontWeight: 700 }}>Confirmar aprobación</DialogTitle>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
+                <DescriptionIcon color="primary" />
+                Vista previa de la selección
+            </DialogTitle>
 
             <DialogContent>
-                <Box
-                    sx={{
-                        backgroundColor: 'warning.light',
-                        color: 'warning.contrastText',
-                        borderRadius: 2,
-                        p: 1.5,
-                        mb: 2,
-                    }}
-                >
-                    <Typography variant="body2">
-                        Estás a punto de aprobar las siguientes {transactionsCount === 1 ? 'transacción' : 'transacciones'}. Esta acción no se puede deshacer.
-                    </Typography>
-                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Totales de las transacciones seleccionadas en esta vista.
+                </Typography>
 
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                     {totalsByType.map(({ transactionType, count, total }) => {
@@ -110,21 +91,12 @@ const ModalApproveTransactionsDialog: React.FC<ModalApproveTransactionsDialogPro
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2.5 }}>
-                <Button onClick={onCancel} disabled={loading}>
-                    Cancelar
-                </Button>
-                <Button
-                    variant="contained"
-                    color="success"
-                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <CheckCircleIcon />}
-                    onClick={onConfirm}
-                    disabled={loading}
-                >
-                    {loading ? 'Aprobando...' : 'Aprobar'}
+                <Button variant="contained" onClick={onClose}>
+                    Cerrar
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default ModalApproveTransactionsDialog;
+export default ModalPreviewTransactionsDialog;

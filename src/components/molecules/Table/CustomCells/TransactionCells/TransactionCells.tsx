@@ -6,7 +6,9 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
-import { getCreditColorByStatus } from '@/shared/utils/ProcessStatusDataUtils';
+import { getTransactionColorByStatus } from '@/shared/utils/ProcessStatusDataUtils';
+import { TRANSACTION_STATUS_LABELS } from '@/shared/constants/catalogs/credit_filters.catalog';
+import { TransactionStatusEnum } from '@/infrastructure/constants/credit/TransactionStatusEnum';
 import { TransactionColumnsEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
 import { TransactionTable } from '@/types/TransactionTable';
 
@@ -47,8 +49,8 @@ export const TransactionCells: React.FC<TransactionCellsProps> = (props: Transac
     ),
     [TransactionColumnsEnum.status]: (
       <Chip
-        label={props.transaction.status || 'CHARGE-PROCESS'}
-        color={getCreditColorByStatus(props.transaction.status || 'CHARGE-PROCESS')}
+        label={TRANSACTION_STATUS_LABELS[props.transaction.status ?? ''] ?? props.transaction.status ?? 'Pendiente'}
+        color={getTransactionColorByStatus(props.transaction.status || TransactionStatusEnum.PENDING)}
         size="small"
       />
     ),

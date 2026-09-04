@@ -10,33 +10,28 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { CheckCircle as CheckCircleIcon, Payments as PaymentsIcon } from '@mui/icons-material';
+import { Cancel as CancelIcon, Payments as PaymentsIcon } from '@mui/icons-material';
 import { TRANSACTION_TYPE_DISPLAY } from '@/shared/constants/catalogs/transaction_type.catalog';
+import type { TransactionTypeTotal } from '@/components/molecules/ModalDialog/ModalApproveTransactionsDialog/ModalApproveTransactionsDialog';
 
-export interface TransactionTypeTotal {
-    transactionType: string;
-    count: number;
-    total: number;
-}
-
-export interface ModalApproveTransactionsDialogStateProps {
+export interface ModalRejectTransactionsDialogStateProps {
     open: boolean;
     transactionsCount: number;
     totalsByType: TransactionTypeTotal[];
     loading: boolean;
 }
 
-export interface ModalApproveTransactionsDialogFunctionsProps {
+export interface ModalRejectTransactionsDialogFunctionsProps {
     onConfirm: () => void;
     onCancel: () => void;
 }
 
-export type ModalApproveTransactionsDialogProps = ModalApproveTransactionsDialogStateProps & ModalApproveTransactionsDialogFunctionsProps;
+export type ModalRejectTransactionsDialogProps = ModalRejectTransactionsDialogStateProps & ModalRejectTransactionsDialogFunctionsProps;
 
 const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 
-const ModalApproveTransactionsDialog: React.FC<ModalApproveTransactionsDialogProps> = ({
+const ModalRejectTransactionsDialog: React.FC<ModalRejectTransactionsDialogProps> = ({
     open,
     transactionsCount,
     totalsByType,
@@ -46,7 +41,7 @@ const ModalApproveTransactionsDialog: React.FC<ModalApproveTransactionsDialogPro
 }) => {
     return (
         <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ fontWeight: 700 }}>Confirmar aprobación</DialogTitle>
+            <DialogTitle sx={{ fontWeight: 700 }}>Confirmar rechazo</DialogTitle>
 
             <DialogContent>
                 <Box
@@ -59,7 +54,7 @@ const ModalApproveTransactionsDialog: React.FC<ModalApproveTransactionsDialogPro
                     }}
                 >
                     <Typography variant="body2">
-                        Estás a punto de aprobar las siguientes {transactionsCount === 1 ? 'transacción' : 'transacciones'}. Esta acción no se puede deshacer.
+                        Estás a punto de rechazar las siguientes {transactionsCount === 1 ? 'transacción' : 'transacciones'}. Esta acción no se puede deshacer.
                     </Typography>
                 </Box>
 
@@ -115,16 +110,16 @@ const ModalApproveTransactionsDialog: React.FC<ModalApproveTransactionsDialogPro
                 </Button>
                 <Button
                     variant="contained"
-                    color="success"
-                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <CheckCircleIcon />}
+                    color="error"
+                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <CancelIcon />}
                     onClick={onConfirm}
                     disabled={loading}
                 >
-                    {loading ? 'Aprobando...' : 'Aprobar'}
+                    {loading ? 'Rechazando...' : 'Rechazar'}
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default ModalApproveTransactionsDialog;
+export default ModalRejectTransactionsDialog;

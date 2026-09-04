@@ -19,3 +19,8 @@ export const TRANSACTION_STATUS_OPTIONS: Record<string, string> = {
 export const CREDIT_STATUS_LABELS: Record<string, string> = Object.fromEntries(
     Object.entries(CREDIT_STATUS_OPTIONS).map(([label, value]) => [value, label])
 );
+
+// Mismo criterio para el status de transacción (chip de status en TransactionCells)
+export const TRANSACTION_STATUS_LABELS: Record<string, string> = Object.fromEntries(
+    Object.entries(TRANSACTION_STATUS_OPTIONS).map(([label, value]) => [value, label])
+);

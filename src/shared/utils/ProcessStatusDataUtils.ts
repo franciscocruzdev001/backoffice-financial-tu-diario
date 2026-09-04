@@ -1,4 +1,5 @@
 import { StatusEnum } from "@/infrastructure/constants/credit/StatusEnum";
+import { TransactionStatusEnum } from "@/infrastructure/constants/credit/TransactionStatusEnum";
 import { ChipColorEnum } from "../constants/PropertiesEnumMuiComponets";
 /*
 *   Estatus dashboard
@@ -25,7 +26,17 @@ import { ChipColorEnum } from "../constants/PropertiesEnumMuiComponets";
         return colors[status] || ChipColorEnum.DEFAULT;
     };
 
-/* 
+    // ✅ Color de MUI Chip para el status de la transacción en la tabla (TransactionCells)
+    export const getTransactionColorByStatus = (status: string): ChipColorEnum => {
+        const colors: Record<string, ChipColorEnum> = {
+        [TransactionStatusEnum.PENDING]: ChipColorEnum.WARNING,
+        [TransactionStatusEnum.APPROVED]: ChipColorEnum.SUCCES,
+        [TransactionStatusEnum.CANCELLED]: ChipColorEnum.ERROR,
+        };
+        return colors[status] || ChipColorEnum.DEFAULT;
+    };
+
+/*
 *   Estatus filter
 */
     export const STATUS_CHIP_COLOR = (status: string): ChipColorEnum => {

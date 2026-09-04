@@ -6,6 +6,7 @@ import axios from "../shared/utils/axiosUtils"
 import { get } from 'lodash';
 import { SearchTransactionsRequest } from '@/types/SearchTransactionsRequest';
 import { TransactionTable } from '@/types/TransactionTable';
+import { TransactionChangeStatusBatchLogs } from '@/types/TransactionChangeStatusBatchLogs';
 
 interface TransactionStoreState {
     transactionsData: {
@@ -18,8 +19,8 @@ interface TransactionStoreState {
         total: number,
         entityName: DashboardTableCatalogEnum
     }) => void,
-    searchTransactionsData: (request: SearchTransactionsRequest) => Promise<void>
-
+    searchTransactionsData: (request: SearchTransactionsRequest) => Promise<void>,
+    approveTransactionsOperations: (transactionIds: string[]) => Promise<TransactionChangeStatusBatchLogs>
 
 }
 
@@ -43,6 +44,13 @@ export const useTransactionStore = create<TransactionStoreState>()(
                         entityName: DashboardTableCatalogEnum.transactions
                     }
                 }))
+            },
+            approveTransactionsOperations: async (transactionIds: string[]) => {
+                const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("http://localhost:4003/transactions/approveTransactionsOperations", { transactionIds });
+                return get(response.data, "data", {
+                    changeStatus: "approved",
+                    resumeTotalsByTransactionType: []
+                });
             }
         }),
         {
