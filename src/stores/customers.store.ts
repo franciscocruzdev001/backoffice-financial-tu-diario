@@ -34,7 +34,8 @@ export const useCustomerStore = create<CustomerStoreState>()(
                 entityName: DashboardTableCatalogEnum
             }) => set(state => ({ customersData: value })),
             searchCustomersData: async (request: SearchCustomersRequest) => {
-                const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCustomers", request);
+                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCustomers", request);
+                const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCustomers", request);
                 console.log(response.data);
                 set(state => ({
                     customersData: {

@@ -21,8 +21,11 @@ export const useAuthStore = create<AuthStoreState>()(
             user: null,
             isAuthenticated: false,
             login: async (request: LoginRequest) => {
+                // const response = await axios.post<{ mensaje: string, data: LoginResponse }>(
+                //     "http://localhost:4000/authorizer/login", request
+                // );
                 const response = await axios.post<{ mensaje: string, data: LoginResponse }>(
-                    "http://localhost:4000/authorizer/login", request
+                    "https://credit-saas-gateway.onrender.com/authorizer/login", request
                 );
                 const token = get(response.data, "data.token", "");
                 const user = get(response.data, "data.user", null);

@@ -41,7 +41,8 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                 entityName: DashboardTableCatalogEnum
             }) => set(state => ({ employeesData: value })),
             searchEmployeesData: async (request: SearchEmployeesRequest) => {
-                const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchEmployees", request);
+                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchEmployees", request);
+                const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchEmployees", request);
                 console.log(response.data);
                 set(state => ({
                     employeesData: {
@@ -52,7 +53,8 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                 }))
             },
             createUser: async (request: Users) => {
-                const response = await axios.post<{ mensaje: string, data: boolean }>("http://localhost:4000/authorizer/createUser", request);
+                // const response = await axios.post<{ mensaje: string, data: boolean }>("http://localhost:4000/authorizer/createUser", request);
+                const response = await axios.post<{ mensaje: string, data: boolean }>("https://credit-saas-gateway.onrender.com/authorizer/createUser", request);
                 console.log(response.data);
                 set(state => ({
                     notification: {
