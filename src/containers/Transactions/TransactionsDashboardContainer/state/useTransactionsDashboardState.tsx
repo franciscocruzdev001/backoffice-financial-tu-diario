@@ -100,9 +100,16 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     });
 
     /**
-     * Selección múltiple de filas (solo transacciones)
+     * Selección múltiple de filas (solo transacciones).
+     * Se guarda el objeto completo (id -> transacción), no solo el id: los
+     * totales por tipo (Créditos/Pagos) de los modales de aprobar/rechazar/
+     * preview se calculaban filtrando transactionsData.records, que solo
+     * tiene la página actual cargada — al cambiar de página, la selección de
+     * páginas anteriores desaparecía de esos totales (aunque sí se seguía
+     * mandando completa al backend al aprobar, porque eso usa los ids).
      */
-    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, TransactionTable>>({});
+    const selectedIds = new Set(Object.keys(selectedItemsMap));
 
     // IDs visibles en la página actual — "seleccionar todo" solo actúa sobre
     // estos, nunca sobre el total del backend
@@ -116,31 +123,30 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         !isAllSelected && currentPageIds.some((id) => selectedIds.has(id));
 
     const handleToggleItem = (id: string) => {
-        setSelectedIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) {
-                next.delete(id);
-            } else {
-                next.add(id);
+        setSelectedItemsMap((prev) => {
+            if (prev[id]) {
+                const { [id]: _removed, ...rest } = prev;
+                return rest;
             }
-            return next;
+            const item = (transactionsData.records as TransactionTable[]).find((t) => t._id === id);
+            return item ? { ...prev, [id]: item } : prev;
         });
     };
 
     const handleToggleAll = () => {
-        setSelectedIds((prev) => {
-            const next = new Set(prev);
+        setSelectedItemsMap((prev) => {
+            const next = { ...prev };
             if (isAllSelected) {
-                currentPageIds.forEach((id) => next.delete(id));
+                currentPageIds.forEach((id) => { delete next[id]; });
             } else {
-                currentPageIds.forEach((id) => next.add(id));
+                (transactionsData.records as TransactionTable[]).forEach((t) => {
+                    if (t._id) next[t._id] = t;
+                });
             }
             return next;
         });
     };
-    const selectedTransactions = (transactionsData.records as TransactionTable[]).filter(
-        (t) => t._id && selectedIds.has(t._id)
-    );
+    const selectedTransactions = Object.values(selectedItemsMap);
 
     const totalsByType: TransactionTypeTotal[] = Object.entries(
         selectedTransactions.reduce<Record<string, { count: number; total: number }>>((acc, t) => {
@@ -156,7 +162,7 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         (t) => t.status === TransactionStatusEnum.APPROVED
     );
 
-    const clearSelection = () => setSelectedIds(new Set());
+    const clearSelection = () => setSelectedItemsMap({});
 
     const selection: TableSelectionProps = {
         isSelected: (id: string) => selectedIds.has(id),
