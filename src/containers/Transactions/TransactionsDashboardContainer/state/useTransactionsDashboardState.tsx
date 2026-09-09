@@ -12,6 +12,7 @@ import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { useTransactionStore } from '@/stores/transactions.store';
 import { FiltersItems } from '@/types/SearchTransactionsRequest';
 import { TransactionTable } from '@/types/TransactionTable';
+import { TransactionChangeStatusBatchLogs } from '@/types/TransactionChangeStatusBatchLogs';
 import { type DateRangeValue } from '@/components/molecules/Table/Filter/DateRangeSection/DateRangeSection';
 import { EMPLOYEE_WALLET_OPTIONS, EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallets.catalog';
 import { useAuthStore } from '@/stores/auth.store';
@@ -90,6 +91,10 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     const [showModalPreview, setShowModalPreview] = useState<boolean>(false);
     const [showModalRejectConfirm, setShowModalRejectConfirm] = useState<boolean>(false);
     const [approvingTransactions, setApprovingTransactions] = useState<boolean>(false);
+    // Resultado (o error) de la última aprobación — se queda distinto de null
+    // mientras el usuario no cierre el modal a propósito con "Cerrar".
+    const [approveResult, setApproveResult] = useState<TransactionChangeStatusBatchLogs | null>(null);
+    const [approveError, setApproveError] = useState<string | null>(null);
     const [selectedItem, setSelectedItem] = useState<TransactionTable>({
         _id: "123",
         transactionType: "LOAN_DISBURSEMENT",
@@ -180,16 +185,13 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     const handleConfirmApproveTransactions = async () => {
         setApprovingTransactions(true);
         try {
-            await approveTransactionsOperations(Array.from(selectedIds));
-            setShowModalApproveConfirm(false);
-            clearSelection();
-            // Refresca la página actual para reflejar el nuevo status (approved).
-            searchTransactionsData({
-                filtersItems: filterItems,
-                pagination: { limit: rowsPerPageChange, pageNumber: page }
-            });
+            const result = await approveTransactionsOperations(Array.from(selectedIds));
+            // El modal se queda abierto mostrando el resumen — se cierra hasta
+            // que el usuario le da a "Cerrar" (handleCloseApproveResult).
+            setApproveResult(result);
         } catch (error) {
             console.error('Error al aprobar transacciones:', error);
+            setApproveError('No se pudo completar la aprobación. Intenta de nuevo.');
         } finally {
             setApprovingTransactions(false);
         }
@@ -197,6 +199,27 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
 
     const handleCancelApproveTransactions = () => {
         setShowModalApproveConfirm(false);
+    };
+
+    // Botón "Cerrar" del resumen — solo dispara la animación de salida del
+    // modal. Si aquí también se limpiara result/error, el modal alcanzaría a
+    // mostrar de vuelta la vista de "Confirmar aprobación" por un instante
+    // mientras se desvanece (showResult pasaría a false a mitad del fade-out).
+    const handleCloseApproveResult = () => {
+        setShowModalApproveConfirm(false);
+    };
+
+    // Se dispara cuando la animación de salida del modal ya terminó — aquí sí
+    // es seguro limpiar el resultado y refrescar la tabla.
+    const handleApproveModalExited = () => {
+        setApproveResult(null);
+        setApproveError(null);
+        clearSelection();
+        // Refresca la página actual para reflejar el nuevo status (approved).
+        searchTransactionsData({
+            filtersItems: filterItems,
+            pagination: { limit: rowsPerPageChange, pageNumber: page }
+        });
     };
 
     const handleOpenPreview = () => {
@@ -409,8 +432,12 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             transactionsCount: selectedIds.size,
             totalsByType,
             loading: approvingTransactions,
+            result: approveResult,
+            error: approveError,
             onConfirm: handleConfirmApproveTransactions,
             onCancel: handleCancelApproveTransactions,
+            onClose: handleCloseApproveResult,
+            onExited: handleApproveModalExited,
         },
         modalPreviewTransactionsProps: {
             open: showModalPreview,
