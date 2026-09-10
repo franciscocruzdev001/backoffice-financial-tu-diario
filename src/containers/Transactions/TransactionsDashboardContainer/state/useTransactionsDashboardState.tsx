@@ -281,10 +281,15 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             status: defaultTo(documentFilter["estatus"], []).map((filter) => filter.value),
             transactionType: defaultTo(documentFilter["movimiento"], []).map((filter) => filter.value),
             creditorCompanyId,
+            // La fecha se maneja como number. endDate se lleva al final del día
+            // (23:59:59.999) porque range.endDate es una fecha sin hora
+            // ("YYYY-MM-DD"), y new Date(...) la interpreta como medianoche UTC —
+            // dejarla así excluye cualquier transacción de ese mismo día ocurrida
+            // después de medianoche (mismo bug que se corrigió en el mobile).
             ...(newDateRange.range ? {
                 createdRangeDate: {
-                    startDate: newDateRange.range.startDate,
-                    endDate: newDateRange.range.endDate,
+                    startDate: new Date(newDateRange.range.startDate).getTime(),
+                    endDate: new Date(`${newDateRange.range.endDate}T23:59:59.999Z`).getTime(),
                 },
             } : {}),
             // Si hay un trabajador seleccionado, acota la búsqueda a su wallet
