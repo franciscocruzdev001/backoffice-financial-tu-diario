@@ -63,7 +63,7 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     /**
             * Transaction data state
             */
-    const { transactionsData, searchTransactionsData, approveTransactionsOperations } = useTransactionStore();
+    const { transactionsData, searchTransactionsData, approveTransactionsOperations, cancelTransactionsOperations } = useTransactionStore();
     // creditorCompanyId real del admin autenticado (no un id de prueba fijo,
     // cada admin solo debe ver las transacciones de su propia empresa)
     const creditorCompanyId = useAuthStore((state) => state.user?.creditorCompanyId ?? '');
@@ -95,6 +95,10 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     // mientras el usuario no cierre el modal a propósito con "Cerrar".
     const [approveResult, setApproveResult] = useState<TransactionChangeStatusBatchLogs | null>(null);
     const [approveError, setApproveError] = useState<string | null>(null);
+    // Mismo patrón que approve, para rechazar/cancelar
+    const [rejectingTransactions, setRejectingTransactions] = useState<boolean>(false);
+    const [rejectResult, setRejectResult] = useState<TransactionChangeStatusBatchLogs | null>(null);
+    const [rejectError, setRejectError] = useState<string | null>(null);
     const [selectedItem, setSelectedItem] = useState<TransactionTable>({
         _id: "123",
         transactionType: "LOAN_DISBURSEMENT",
@@ -234,15 +238,40 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         setShowModalRejectConfirm(true);
     };
 
-    const handleConfirmRejectTransactions = () => {
-        console.log('Rechazar transacciones seleccionadas:', Array.from(selectedIds));
-        // TODO: aqui iria el endpoint rechazar/cancelar las transacciones.
-        setShowModalRejectConfirm(false);
-        clearSelection();
+    const handleConfirmRejectTransactions = async () => {
+        setRejectingTransactions(true);
+        try {
+            const result = await cancelTransactionsOperations(Array.from(selectedIds));
+            // El modal se queda abierto mostrando el resumen — se cierra hasta
+            // que el usuario le da a "Cerrar" (handleCloseRejectResult).
+            setRejectResult(result);
+        } catch (error) {
+            console.error('Error al rechazar transacciones:', error);
+            setRejectError('No se pudo completar el rechazo. Intenta de nuevo.');
+        } finally {
+            setRejectingTransactions(false);
+        }
     };
 
     const handleCancelRejectTransactions = () => {
         setShowModalRejectConfirm(false);
+    };
+
+    // Mismo motivo que handleCloseApproveResult: solo dispara la animación de
+    // salida, result/error se limpian hasta que termine (ver onExited).
+    const handleCloseRejectResult = () => {
+        setShowModalRejectConfirm(false);
+    };
+
+    const handleRejectModalExited = () => {
+        setRejectResult(null);
+        setRejectError(null);
+        clearSelection();
+        // Refresca la página actual para reflejar el nuevo status (cancelled).
+        searchTransactionsData({
+            filtersItems: filterItems,
+            pagination: { limit: rowsPerPageChange, pageNumber: page }
+        });
     };
 
     /**
@@ -424,7 +453,10 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         },
         rejectTransactionsButtonProps: {
             label: selectedIds.size <= 1 ? 'Rechazar transacción' : `Rechazar ${selectedIds.size} transacciones`,
-            disabled: selectedIds.size === 0,
+            // Mismo bloqueo que "Aprobar": una transacción ya aprobada movió su
+            // dinero de pendiente a firme — cancelarla solo restaría del
+            // pendiente (que ya no tiene ese monto), dejando el balance mal.
+            disabled: selectedIds.size === 0 || haySeleccionadaYaAprobada,
             selectedCount: selectedIds.size,
             onClick: handleOpenRejectConfirm,
         },
@@ -453,9 +485,13 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             open: showModalRejectConfirm,
             transactionsCount: selectedIds.size,
             totalsByType,
-            loading: false,
+            loading: rejectingTransactions,
+            result: rejectResult,
+            error: rejectError,
             onConfirm: handleConfirmRejectTransactions,
             onCancel: handleCancelRejectTransactions,
+            onClose: handleCloseRejectResult,
+            onExited: handleRejectModalExited,
         },
     }
 }

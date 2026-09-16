@@ -20,7 +20,8 @@ interface TransactionStoreState {
         entityName: DashboardTableCatalogEnum
     }) => void,
     searchTransactionsData: (request: SearchTransactionsRequest) => Promise<void>,
-    approveTransactionsOperations: (transactionIds: string[]) => Promise<TransactionChangeStatusBatchLogs>
+    approveTransactionsOperations: (transactionIds: string[]) => Promise<TransactionChangeStatusBatchLogs>,
+    cancelTransactionsOperations: (transactionIds: string[]) => Promise<TransactionChangeStatusBatchLogs>
 
 }
 
@@ -51,6 +52,14 @@ export const useTransactionStore = create<TransactionStoreState>()(
                 const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("https://credit-saas-gateway.onrender.com/transactions/approveTransactionsOperations", { transactionIds });
                 return get(response.data, "data", {
                     changeStatus: "approved",
+                    resumeTotalsByTransactionType: []
+                });
+            },
+            cancelTransactionsOperations: async (transactionIds: string[]) => {
+                // const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("http://localhost:4003/transactions/cancelTransactionsOperations", { transactionIds });
+                const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("https://credit-saas-gateway.onrender.com/transactions/cancelTransactionsOperations", { transactionIds });
+                return get(response.data, "data", {
+                    changeStatus: "cancelled",
                     resumeTotalsByTransactionType: []
                 });
             }
