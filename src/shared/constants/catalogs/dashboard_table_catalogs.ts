@@ -21,8 +21,11 @@ export enum CustomerColumnsEnum {
 export enum CreditColumnsEnum {
     creditName = "creditName",
     status = "status",
+    transactionStatus = "transactionStatus",
     created = "created",
     total = "total",
+    amountDue = "amountDue",
+    amountPaid = "amountPaid",
     customerInfo = "customerInfo",
     employeeInfo = "employeeInfo",
     actions = "actions"
@@ -67,12 +70,15 @@ const ALL_EMPLOYEE_RENDER_COLUMNS: IColumnsTable[] = [
 ];
 
 const ALL_CREDITS_RENDER_COLUMNS: IColumnsTable[] = [
-    { columnTableId: CreditColumnsEnum.creditName, tittle: "Nombre Credito" },
+    { columnTableId: CreditColumnsEnum.creditName, tittle: "Nombre de Cliente" },
     { columnTableId: CreditColumnsEnum.created, tittle: "Registro" },
     { columnTableId: CreditColumnsEnum.customerInfo, tittle: "Informacion Cliente" },
     { columnTableId: CreditColumnsEnum.employeeInfo, tittle: "Informacion Empleado" },
-    { columnTableId: CreditColumnsEnum.status, tittle: "Status" },
+    { columnTableId: CreditColumnsEnum.status, tittle: "Status", minWidth: 170, titleOffset: 12 },
+    { columnTableId: CreditColumnsEnum.transactionStatus, tittle: "Status de la Transacción", minWidth: 170 },
     { columnTableId: CreditColumnsEnum.total, tittle: "Total" },
+    { columnTableId: CreditColumnsEnum.amountDue, tittle: "Monto por Pagar" },
+    { columnTableId: CreditColumnsEnum.amountPaid, tittle: "Monto Pagado" },
     { columnTableId: CreditColumnsEnum.actions, tittle: "Acciones" }
 ];
 

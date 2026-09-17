@@ -17,6 +17,9 @@
                 },
                 "phoneNumber": {
                     "type": "string"
+                },
+                "address": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -72,6 +75,15 @@
             "type": "string"
         },
         "total": {
+            "type": "number"
+        },
+        "transactionStatus": {
+            "type": "string"
+        },
+        "amountDue": {
+            "type": "number"
+        },
+        "amountPaid": {
             "type": "number"
         },
         "customerBasicInfo": {

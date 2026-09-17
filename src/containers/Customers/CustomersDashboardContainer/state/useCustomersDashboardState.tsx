@@ -186,7 +186,8 @@ export const useCustomersDashboardState = (): IUseCustomersDashboardState => {
 
     return {
         dashboardHeaderProps: {
-            tittle: `Clientes ${customersData.total}`,
+            tittle: "Clientes",
+            count: customersData.total,
             handleOnClick
         },
         dashboardTableProps: {

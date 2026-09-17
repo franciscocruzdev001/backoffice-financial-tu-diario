@@ -210,7 +210,8 @@ export const useEmployeesDashboardState = (): IUseEmployeesDashboardState => {
 
     return {
         dashboardHeaderProps: {
-            tittle: `Empleados ${employeesData.total}`,
+            tittle: "Empleados",
+            count: employeesData.total,
             handleOnClick
         },
         dashboardTableProps: {

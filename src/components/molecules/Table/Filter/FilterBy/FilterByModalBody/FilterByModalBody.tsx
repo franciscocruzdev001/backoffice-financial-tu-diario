@@ -24,10 +24,14 @@ export interface FilterByModalBodyStateProps {
     // padre provee este catálogo (por ahora únicamente Transactions).
     employeeOptions?: EmployeeWalletOption[];
     selectedEmployeeId?: string | null;
+    onEmployeeInputChange?: (text: string) => void;
+    employeeSearchLoading?: boolean;
     // Opt-in: solo se renderiza el Autocomplete de cliente si la vista
     // padre provee este catálogo (por ahora únicamente Credits).
     customerOptions?: CustomerOption[];
     selectedCustomerId?: string | null;
+    onCustomerInputChange?: (text: string) => void;
+    customerSearchLoading?: boolean;
 }
 
 export interface FilterByModalBodyFunctionsProps {
@@ -52,6 +56,8 @@ export const FilterByModalBody: React.FC<FilterByModalBodyProps> = (props: Filte
                         options={props.employeeOptions}
                         selectedEmployeeId={props.selectedEmployeeId ?? null}
                         onChange={props.onEmployeeChange}
+                        onInputChange={props.onEmployeeInputChange}
+                        loading={props.employeeSearchLoading}
                     />
                     <Divider sx={{ mb: 2 }} />
                 </>
@@ -64,6 +70,8 @@ export const FilterByModalBody: React.FC<FilterByModalBodyProps> = (props: Filte
                         options={props.customerOptions}
                         selectedCustomerId={props.selectedCustomerId ?? null}
                         onChange={props.onCustomerChange}
+                        onInputChange={props.onCustomerInputChange}
+                        loading={props.customerSearchLoading}
                     />
                     <Divider sx={{ mb: 2 }} />
                 </>

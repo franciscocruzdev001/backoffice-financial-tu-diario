@@ -21,12 +21,16 @@ export const FilterByModalSelectArea: React.FC<FilterByModalSelectAreaProps> = (
     const classes = useFilterByModalSelectAreaStyle();
     //const valuesByCategory = groupBy(props.currentFiltersV2, "category");
 
+    // Los category son camelCase ("estatusCredito"), sin esto textTransform:
+    // uppercase los pega en una sola palabra ("ESTATUSCREDITO").
+    const displayCategory = props.options.category.replace(/([a-z])([A-Z])/g, '$1 $2');
+
     return (
         <Box sx={{ ...classes.selectAreaContainer }}>
             <Box sx={{ ...classes.selectAreaHeaderContainer }}>
                 <Typography variant="caption" fontWeight={700} letterSpacing="0.08em" color="text.secondary"
                     sx={{ textTransform: "uppercase" }}>
-                    {props.options.category}
+                    {displayCategory}
                 </Typography>
                 {props.currentFilters.length > 0 && (
                     <Typography

@@ -5,9 +5,10 @@ import CustomCard from '@/components/atoms/CustomCard/CustomCard';
 import DashboardTable from '@/components/molecules/Table/DahsboardTable/DashboardTable';
 import ModalDeleteItemConfirmDialog from '@/components/molecules/ModalDialog/ModalDeleteItemConfirmDialog/ModalDeleteItemConfirmDialog';
 import SnackbarNotification from '@/components/molecules/SnackbarNotification/SnackbarNotification';
-import { Fab } from '@mui/material';
+import { Box, Button, Fab } from '@mui/material';
 import {
-    Add as AddIcon
+    Add as AddIcon,
+    Badge as BadgeIcon
 } from '@mui/icons-material';
 
 
@@ -17,7 +18,8 @@ const CreditsDashboardContainer = () => {
         dashboardHeaderProps,
         dashboardTableProps,
         snackbarNotificationProps,
-        modalDeleteItemConfirmProps
+        modalDeleteItemConfirmProps,
+        generateCardButtonProps
     } = useCreditsDashboardState();
     const error: string = "esto es un mensaje de error de prueba, LIC TAPIAAAAAAAAAAA";
 
@@ -26,6 +28,19 @@ const CreditsDashboardContainer = () => {
             {/* Client Header - Sustituir por DashboardHeader */}
             <DashboardHeader {...dashboardHeaderProps} />
             {/* Alert Message if exist error*/}
+
+            {/* Botón de generar tarjeta, activo solo si hay al menos 1 crédito seleccionado */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<BadgeIcon />}
+                    disabled={generateCardButtonProps.disabled}
+                    onClick={generateCardButtonProps.onClick}
+                >
+                    {generateCardButtonProps.label}
+                </Button>
+            </Box>
 
              {/* Credits table whit information*/}
             <CustomCard>

@@ -66,11 +66,11 @@ const DashboardTable: React.FC<DashboardTableProps> = (props: DashboardTableProp
                 {props.data.total === 0 ? (
                     <EmptyDashboardTable />
                 ) : (
-                    <Table>
+                    <Table sx={{ tableLayout: 'auto' }}>
                         <TableHead>
-                            <TableRow>
+                            <TableRow sx={{ backgroundColor: 'action.hover' }}>
                                 {props.selection && (
-                                    <TableCell padding="checkbox">
+                                    <TableCell padding="checkbox" sx={{ verticalAlign: 'middle' }}>
                                         <Checkbox
                                             indeterminate={props.selection.isIndeterminate}
                                             checked={props.selection.isAllSelected}
@@ -80,8 +80,16 @@ const DashboardTable: React.FC<DashboardTableProps> = (props: DashboardTableProp
                                     </TableCell>
                                 )}
                                 {props.renderColumnsTable.map((column: IColumnsTable) => (
-                                    <TableCell key={column.columnTableId}>
-                                        <strong>{column.tittle}</strong>
+                                    <TableCell
+                                        key={column.columnTableId}
+                                        sx={{
+                                            whiteSpace: 'nowrap',
+                                            verticalAlign: 'middle',
+                                            py: 1.5,
+                                            minWidth: column.minWidth
+                                        }}
+                                    >
+                                        <strong style={{ marginLeft: column.titleOffset }}>{column.tittle}</strong>
                                     </TableCell>
                                 ))}
                             </TableRow>

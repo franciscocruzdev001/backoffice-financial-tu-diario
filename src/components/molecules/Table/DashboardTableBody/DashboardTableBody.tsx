@@ -88,8 +88,23 @@ const DashboardTableBody: React.FC<DashboardTableBodyProps> = (props: DashboardT
             <React.Fragment>
                 {data.records.map((record: Entities, index) => {
                     const credit: CreditTable = record as CreditTable;
+                    const id = props.selection?.getId(credit) ?? '';
+                    const isSelected = props.selection?.isSelected(id) ?? false;
+
                     return (
-                        <TableRow key={`TableRow_${data.entityName}_${index}`}>
+                        <TableRow
+                            key={`TableRow_${data.entityName}_${index}`}
+                            selected={isSelected}
+                        >
+                            {props.selection && (
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        checked={isSelected}
+                                        onChange={() => props.selection!.onToggleItem(id)}
+                                        inputProps={{ 'aria-label': `Seleccionar crédito ${id}` }}
+                                    />
+                                </TableCell>
+                            )}
                             {props.renderColumnsTable.map((column: IColumnsTable, indexCell: number) => (
                                 <CreditCells
                                     key={`EmployeeCell_${column.columnTableId}_${credit.creditId}_${indexCell}`}

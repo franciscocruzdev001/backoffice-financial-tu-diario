@@ -41,9 +41,18 @@ export interface ToolbarDashboardFilterStateProps {
     // Opt-in: solo la vista que lo necesite (Transactions) provee este catálogo,
     // así el Autocomplete de trabajador no aparece en las demás vistas
     employeeOptions?: EmployeeWalletOption[];
+    // Búsqueda en vivo con debounce del Autocomplete de trabajador — opt-in
+    // junto con employeeOptions (por ahora solo la usa Credits; Transactions
+    // sigue con su catálogo estático y no manda estos dos).
+    onEmployeeInputChange?: (text: string) => void;
+    employeeSearchLoading?: boolean;
     // Opt-in: solo la vista que lo necesite (Credits) provee este catálogo,
     // así el Autocomplete de cliente no aparece en las demás vistas
     customerOptions?: CustomerOption[];
+    // Búsqueda en vivo con debounce del Autocomplete de cliente — opt-in junto
+    // con customerOptions, mismo criterio que el resto de este campo.
+    onCustomerInputChange?: (text: string) => void;
+    customerSearchLoading?: boolean;
 
 }
 
@@ -93,8 +102,12 @@ export const ToolbarDashboardFilter: React.FC<ToolbarDashboardFilterProps> = (pr
                 currentFilters={filterByModal.activeFilters}
                 dateRange={filterByModal.dateRange}
                 employeeOptions={props.employeeOptions}
+                onEmployeeInputChange={props.onEmployeeInputChange}
+                employeeSearchLoading={props.employeeSearchLoading}
                 selectedEmployeeId={filterByModal.selectedEmployeeId}
                 customerOptions={props.customerOptions}
+                onCustomerInputChange={props.onCustomerInputChange}
+                customerSearchLoading={props.customerSearchLoading}
                 selectedCustomerId={filterByModal.selectedCustomerId}
                 handleApplyFilters={filterByModal.handleApplyFilters}
             />

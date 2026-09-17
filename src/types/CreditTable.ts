@@ -1,18 +1,22 @@
 export interface CreditTable {
-    created:            number;
-    creditId:           string;
-    creditorCompanyId?: string;
-    customerBasicInfo?: CustomerBasicInfo;
-    employeeBasicInfo?: EmployeeBasicInfo;
-    endDate:            number;
-    lastName:           string;
-    name:               string;
-    startDate:          number;
-    status:             string;
-    total:              number;
+    amountDue?:          number;
+    amountPaid?:         number;
+    created:             number;
+    creditId:            string;
+    creditorCompanyId?:  string;
+    customerBasicInfo?:  CustomerBasicInfo;
+    employeeBasicInfo?:  EmployeeBasicInfo;
+    endDate:             number;
+    lastName:            string;
+    name:                string;
+    startDate:           number;
+    status:              string;
+    total:               number;
+    transactionStatus?:  string;
 }
 
 export interface CustomerBasicInfo {
+    address?:    string;
     customerId:  string;
     fullName:    string;
     phoneNumber: string;

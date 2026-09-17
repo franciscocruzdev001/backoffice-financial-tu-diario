@@ -7,7 +7,6 @@ import { get } from 'lodash';
 import { CreditTable } from '@/types/CreditTable';
 import { SearchCreditsRequest } from '@/types/SearchCreditsRequest';
 import { EMPLOYEE_WALLET_OPTIONS } from '@/shared/constants/catalogs/employeeWallets.catalog';
-import { CUSTOMER_OPTIONS } from '@/shared/constants/catalogs/customers.catalog';
 
 interface CreditStoreState {
     creditsData: {
@@ -38,37 +37,41 @@ export const useCreditStore = create<CreditStoreState>()(
                 const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCredits", request);
                 console.log(response.data);
 
-                // Mapea ICredits (backend, crudo) -> CreditTable (frontend).
-                // El backend de /searchCredits no trae info de cliente/empleado
-                // (no tiene $lookup), así que se resuelven LOCAL contra catálogos
-                // temporales hasta que el backend haga el join real.
+                // Mapea ICreditsWithCustomerBasicInformation (backend, ya con el
+                // $lookup real de customers) -> CreditTable (frontend). El empleado
+                // sigue resolviéndose LOCAL (el backend no hace join de usuarios).
                 const mappedRecords: CreditTable[] = get(response.data, "data.records", []).map((credit: any) => {
                     const employee = EMPLOYEE_WALLET_OPTIONS.find(
                         (e) => e.optionId === credit.userId?.toString()
                     );
-                    const customer = CUSTOMER_OPTIONS.find(
-                        (c) => c.optionId === credit.customerId?.toString()
-                    );
+                    const customerInfo = get(credit, 'customerInfo[0]');
 
                     return {
                         creditId: get(credit, '_id', ''),
                         created: credit.admissionDate ? new Date(credit.admissionDate).getTime() : Date.now(),
                         creditorCompanyId: get(credit, 'creditorCompanyId', ''),
-                        name: customer?.label?.split(' ')[0] ?? 'Cliente',
-                        lastName: customer?.label?.split(' ').slice(1).join(' ') ?? '',
+                        name: get(customerInfo, 'contact.name', 'Cliente'),
+                        lastName: get(customerInfo, 'contact.lastName', ''),
                         startDate: credit.admissionDate ? new Date(credit.admissionDate).getTime() : 0,
                         endDate: credit.expirationDate ? new Date(credit.expirationDate).getTime() : 0,
                         status: get(credit, 'status', ''),
                         total: get(credit, 'creditAmount', 0),
-                        customerBasicInfo: customer ? {
-                            customerId: customer.optionId,
-                            fullName: customer.label,
-                            phoneNumber: customer.phoneNumber ?? '',
+                        transactionStatus: get(credit, 'transactionStatus', ''),
+                        amountDue: get(credit, 'amountDue', 0),
+                        amountPaid: get(credit, 'amountPaid', 0),
+                        customerBasicInfo: customerInfo ? {
+                            customerId: get(credit, 'customerId', ''),
+                            fullName: `${get(customerInfo, 'contact.name', '')} ${get(customerInfo, 'contact.lastName', '')}`.trim(),
+                            phoneNumber: get(customerInfo, 'contact.phoneNumber', ''),
+                            address: get(customerInfo, 'contact.address', ''),
                         } : undefined,
-                        employeeBasicInfo: employee ? {
-                            userId: employee.optionId,
-                            fullName: employee.label,
-                            phoneNumber: employee.phoneNumber ?? '',
+                        // El id de empleado viene directo del crédito (credit.userId);
+                        // el match contra EMPLOYEE_WALLET_OPTIONS es solo para enriquecer
+                        // nombre/telefono si existe, pero no debe bloquear mostrar el id.
+                        employeeBasicInfo: credit.userId ? {
+                            userId: credit.userId.toString(),
+                            fullName: employee?.label ?? '',
+                            phoneNumber: employee?.phoneNumber ?? '',
                         } : undefined,
                     };
                 });

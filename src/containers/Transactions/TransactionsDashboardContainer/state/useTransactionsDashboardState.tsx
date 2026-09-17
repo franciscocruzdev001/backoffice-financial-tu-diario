@@ -170,6 +170,10 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     const haySeleccionadaYaAprobada = selectedTransactions.some(
         (t) => t.status === TransactionStatusEnum.APPROVED
     );
+    // Una transacción cancelada es un estado final — tampoco se puede aprobar ni rechazar.
+    const haySeleccionadaYaCancelada = selectedTransactions.some(
+        (t) => t.status === TransactionStatusEnum.CANCELLED
+    );
 
     const clearSelection = () => setSelectedItemsMap({});
 
@@ -400,7 +404,8 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
 
     return {
         dashboardHeaderProps: {
-            tittle: `Transacciones ${transactionsData.total}`,
+            tittle: "Transacciones",
+            count: transactionsData.total,
             handleOnClick
         },
         dashboardTableProps: {
@@ -447,7 +452,7 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         },
         approveTransactionsButtonProps: {
             label: selectedIds.size <= 1 ? 'Aprobar transacción' : `Aprobar ${selectedIds.size} transacciones`,
-            disabled: selectedIds.size === 0 || haySeleccionadaYaAprobada,
+            disabled: selectedIds.size === 0 || haySeleccionadaYaAprobada || haySeleccionadaYaCancelada,
             selectedCount: selectedIds.size,
             onClick: handleOpenApproveConfirm,
         },
@@ -456,7 +461,8 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             // Mismo bloqueo que "Aprobar": una transacción ya aprobada movió su
             // dinero de pendiente a firme — cancelarla solo restaría del
             // pendiente (que ya no tiene ese monto), dejando el balance mal.
-            disabled: selectedIds.size === 0 || haySeleccionadaYaAprobada,
+            // Una ya cancelada tampoco se puede volver a rechazar: es un estado final.
+            disabled: selectedIds.size === 0 || haySeleccionadaYaAprobada || haySeleccionadaYaCancelada,
             selectedCount: selectedIds.size,
             onClick: handleOpenRejectConfirm,
         },

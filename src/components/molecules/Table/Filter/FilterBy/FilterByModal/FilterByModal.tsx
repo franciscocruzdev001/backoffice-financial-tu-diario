@@ -18,9 +18,13 @@ export interface FilterByModalStateProps {
     // Opt-in: solo la vista que lo necesite (Transactions) provee este catálogo
     employeeOptions?: EmployeeWalletOption[],
     selectedEmployeeId?: string | null,
+    onEmployeeInputChange?: (text: string) => void,
+    employeeSearchLoading?: boolean,
     // Opt-in: solo la vista que lo necesite (Credits) provee este catálogo
     customerOptions?: CustomerOption[],
     selectedCustomerId?: string | null,
+    onCustomerInputChange?: (text: string) => void,
+    customerSearchLoading?: boolean,
 }
 
 export interface FilterByModalFunctionsProps {
@@ -84,9 +88,13 @@ export const FilterByModal: React.FC<FilterByModalProps> = (props: FilterByModal
                     employeeOptions={props.employeeOptions}
                     selectedEmployeeId={draftEmployeeId}
                     onEmployeeChange={onEmployeeChange}
+                    onEmployeeInputChange={props.onEmployeeInputChange}
+                    employeeSearchLoading={props.employeeSearchLoading}
                     customerOptions={props.customerOptions}
                     selectedCustomerId={draftCustomerId}
                     onCustomerChange={onCustomerChange}
+                    onCustomerInputChange={props.onCustomerInputChange}
+                    customerSearchLoading={props.customerSearchLoading}
                 />
             </DialogContent>
 

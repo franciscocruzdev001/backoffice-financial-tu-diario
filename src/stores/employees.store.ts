@@ -7,7 +7,13 @@ import { get } from 'lodash';
 import { EmployeeTable } from '@/types/EmployeeTable';
 import { SearchEmployeesRequest } from '@/types/SearchEmployeesRequest';
 import { Users } from '@/types/Users';
+import { EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallets.catalog';
 
+
+const fetchEmployees = (request: SearchEmployeesRequest) => {
+    // return axios.post<{ total: number, records: any[] }>("http://localhost:4000/authorizer/searchEmployees", request);
+    return axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/authorizer/searchEmployees", request);
+};
 
 interface EmployeeStoreState {
     notification: {
@@ -27,6 +33,8 @@ interface EmployeeStoreState {
     searchEmployeesData: (request: SearchEmployeesRequest) => Promise<void>
     createUser: (request: Users) => Promise<void>
 
+    employeeOptions: EmployeeWalletOption[],
+    searchEmployeeOptions: (request: SearchEmployeesRequest) => Promise<void>
 }
 
 
@@ -41,8 +49,7 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                 entityName: DashboardTableCatalogEnum
             }) => set(state => ({ employeesData: value })),
             searchEmployeesData: async (request: SearchEmployeesRequest) => {
-                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchEmployees", request);
-                const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchEmployees", request);
+                const response = await fetchEmployees(request);
                 console.log(response.data);
                 set(state => ({
                     employeesData: {
@@ -51,6 +58,20 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                         entityName: DashboardTableCatalogEnum.employees
                     }
                 }))
+            },
+            employeeOptions: [],
+            searchEmployeeOptions: async (request: SearchEmployeesRequest) => {
+                const response = await fetchEmployees(request);
+                console.log(response.data);
+                // Mapea el doc crudo de IUsers (userName, contact.phoneNumber) 
+                const options: EmployeeWalletOption[] = get(response.data, "data.records", []).map((employee: any) => ({
+                    optionId: get(employee, '_id', ''),
+                    label: get(employee, 'userName', ''),
+                    phoneNumber: get(employee, 'contact.phoneNumber', ''),
+                    walletId: '',
+                    accountNumber: '',
+                }));
+                set(state => ({ employeeOptions: options }))
             },
             createUser: async (request: Users) => {
                 // const response = await axios.post<{ mensaje: string, data: boolean }>("http://localhost:4000/authorizer/createUser", request);
