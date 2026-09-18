@@ -10,5 +10,7 @@ export enum EmployeeFormContactEnum {
     NAME = "contact.name",
     LASTNAME = "contact.lastName",
     PHONENUMBER = "contact.phoneNumber",
-    ADRESS = "contact.adress"
+    ADDRESS = "contact.address",
+    UBICATION_LATITUDE = "contact.ubication.latitude",
+    UBICATION_LONGITUDE = "contact.ubication.longitude"
 }

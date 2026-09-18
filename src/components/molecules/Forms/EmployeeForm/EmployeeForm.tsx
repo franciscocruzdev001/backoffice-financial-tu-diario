@@ -142,7 +142,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = (props: EmployeeFormPro
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <InputFormatField
-                            name={EmployeeFormContactEnum.ADRESS as Path<FieldValues>}
+                            name={EmployeeFormContactEnum.ADDRESS as Path<FieldValues>}
                             control={props.control}
                             errors={props.errors}
                             required={true}

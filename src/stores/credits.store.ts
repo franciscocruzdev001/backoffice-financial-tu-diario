@@ -32,8 +32,8 @@ export const useCreditStore = create<CreditStoreState>()(
                 entityName: DashboardTableCatalogEnum
             }) => set(state => ({ creditsData: value })),
             searchCreditsData: async (request: SearchCreditsRequest) => {
-                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCredits", request);
-                const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCredits", request);
+                const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCredits", request);
+                // const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCredits", request);
                 console.log(response.data);
 
                 // Mapea ICreditsWithCustomerBasicInformation (backend, ya con el
@@ -66,6 +66,12 @@ export const useCreditStore = create<CreditStoreState>()(
                             phoneNumber: get(customerInfo, 'contact.phoneNumber', ''),
                             address: get(customerInfo, 'contact.address', ''),
                             threeWordsUbication: get(customerInfo, 'threeWordsUbication', ''),
+                            ...(get(customerInfo, 'contact.ubication.latitude', undefined) && get(customerInfo, 'contact.ubication.longitude', undefined) ? {
+                                ubication: {
+                                    latitude: get(customerInfo, 'contact.ubication.latitude', undefined),
+                                    longitude: get(customerInfo, 'contact.ubication.longitude', undefined),
+                                }
+                            } : {}),
                         } : undefined,
                         // Nombre/telefono real del cobrador, ya resuelto por el
                         // backend ($lookup a "users"). userId siempre se muestra

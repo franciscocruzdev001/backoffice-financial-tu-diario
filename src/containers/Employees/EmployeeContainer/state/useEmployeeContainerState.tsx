@@ -26,7 +26,7 @@ export const useEmployeeContainerState = (): IUseEmployeeContainerState => {
                 name: "",
                 lastName: "",
                 phoneNumber: "",
-                adress: ""
+                address: ""
             },
             creditorCompanyId: "123",
             email: "",

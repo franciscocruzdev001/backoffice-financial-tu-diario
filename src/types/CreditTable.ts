@@ -24,6 +24,12 @@ export interface CustomerBasicInfo {
     fullName:             string;
     phoneNumber:          string;
     threeWordsUbication?: string;
+    ubication?:           Ubication;
+}
+
+export interface Ubication {
+    latitude?:  string;
+    longitude?: string;
 }
 
 export interface EmployeeBasicInfo {

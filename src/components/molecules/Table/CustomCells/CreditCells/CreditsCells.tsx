@@ -1,19 +1,21 @@
 import { CreditColumnsEnum, CustomerColumnsEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
 import { getDate, getFullName } from '@/shared/utils/ProcessDataUtils';
 import { Box, Chip, IconButton, Stack, TableCell, Tooltip, Typography } from '@mui/material';
-import React, { JSX } from 'react'
+import React, { JSX, useState } from 'react'
 import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Phone as PhoneIcon,
     LocationOn as LocationOnIcon,
-    Work as WorkIcon
+    Work as WorkIcon,
+    Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { getCreditColorByStatus, getTransactionColorByStatus } from '@/shared/utils/ProcessStatusDataUtils';
 import { CREDIT_STATUS_LABELS, TRANSACTION_STATUS_LABELS } from '@/shared/constants/catalogs/credit_filters.catalog';
 import { CreditTable } from '@/types/CreditTable';
 import { get } from 'lodash';
+import ModalLocationViewDialog from '@/components/molecules/ModalDialog/ModalLocationViewDialog/ModalLocationViewDialog';
 
 export interface CreditCellsStateProps {
     columnTable: IColumnsTable;
@@ -28,6 +30,9 @@ export interface CreditCellsFunctionsProps {
 export type CreditCellsProps = CreditCellsStateProps & CreditCellsFunctionsProps;
 
 export const CreditCells: React.FC<CreditCellsProps> = (props: CreditCellsProps) => {
+    const [showLocationModal, setShowLocationModal] = useState(false);
+    const customerUbication = get(props.credit, 'customerBasicInfo.ubication', undefined);
+
     const cells: Record<CreditColumnsEnum, JSX.Element | any> = {
         [CreditColumnsEnum.creditName]: (
             <Typography variant="body2" fontWeight={500}>
@@ -69,6 +74,17 @@ export const CreditCells: React.FC<CreditCellsProps> = (props: CreditCellsProps)
                             <Typography variant="body2" color="text.secondary">
                                 {get(props.credit, "customerBasicInfo.address", "")}
                             </Typography>
+                            {customerUbication?.latitude && customerUbication?.longitude && (
+                                <Tooltip title="Ver ubicación en el mapa">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => setShowLocationModal(true)}
+                                        sx={{ p: 0.25 }}
+                                    >
+                                        <VisibilityIcon sx={{ fontSize: 15 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
                         </Stack>
                     )}
                 </Box>
@@ -151,10 +167,20 @@ export const CreditCells: React.FC<CreditCellsProps> = (props: CreditCellsProps)
     };
 
     return (
-        <TableCell sx={{ minWidth: props.columnTable.minWidth }}>
-            {cells[
-                props.columnTable.columnTableId as CreditColumnsEnum
-            ]}
-        </TableCell>
+        <>
+            <TableCell sx={{ minWidth: props.columnTable.minWidth }}>
+                {cells[
+                    props.columnTable.columnTableId as CreditColumnsEnum
+                ]}
+            </TableCell>
+
+            <ModalLocationViewDialog
+                open={showLocationModal}
+                onClose={() => setShowLocationModal(false)}
+                customerName={get(props.credit, "customerBasicInfo.fullName", undefined)}
+                address={get(props.credit, "customerBasicInfo.address", undefined)}
+                ubication={customerUbication}
+            />
+        </>
     )
 }
