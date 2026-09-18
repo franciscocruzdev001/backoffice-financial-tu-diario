@@ -5,7 +5,7 @@ import CustomCard from '@/components/atoms/CustomCard/CustomCard';
 import DashboardTable from '@/components/molecules/Table/DahsboardTable/DashboardTable';
 import ModalDeleteItemConfirmDialog from '@/components/molecules/ModalDialog/ModalDeleteItemConfirmDialog/ModalDeleteItemConfirmDialog';
 import SnackbarNotification from '@/components/molecules/SnackbarNotification/SnackbarNotification';
-import { Box, Button, Fab } from '@mui/material';
+import { Box, Button, Fab, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import {
     Add as AddIcon,
     Badge as BadgeIcon
@@ -29,8 +29,23 @@ const CreditsDashboardContainer = () => {
             <DashboardHeader {...dashboardHeaderProps} />
             {/* Alert Message if exist error*/}
 
-            {/* Botón de generar tarjeta, activo solo si hay al menos 1 crédito seleccionado */}
+            {/* Selector de plantilla + botón de generar tarjeta, activo solo si hay al menos 1 crédito seleccionado */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                    <InputLabel id="credit-card-template-label">Plantilla</InputLabel>
+                    <Select
+                        labelId="credit-card-template-label"
+                        label="Plantilla"
+                        value={generateCardButtonProps.selectedTemplateId}
+                        onChange={(event: SelectChangeEvent) => generateCardButtonProps.onTemplateChange(event.target.value)}
+                    >
+                        {generateCardButtonProps.templateOptions.map((template) => (
+                            <MenuItem key={template.id} value={template.id}>
+                                {template.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <Button
                     variant="contained"
                     color="primary"

@@ -81,7 +81,7 @@ export const CreditCells: React.FC<CreditCellsProps> = (props: CreditCellsProps)
         [CreditColumnsEnum.employeeInfo]: (
             props.credit.employeeBasicInfo ? (
                 <Typography variant="body2" color="text.secondary">
-                    {get(props.credit, "employeeBasicInfo.userId", "")}
+                    {get(props.credit, "employeeBasicInfo.fullName", "") || get(props.credit, "employeeBasicInfo.userId", "")}
                 </Typography>
             ) : (
                 <Typography variant="body2" color="text.secondary">

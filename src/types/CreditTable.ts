@@ -1,14 +1,17 @@
 export interface CreditTable {
     amountDue?:          number;
     amountPaid?:         number;
+    chargePeriods?:      number;
     created:             number;
     creditId:            string;
     creditorCompanyId?:  string;
     customerBasicInfo?:  CustomerBasicInfo;
     employeeBasicInfo?:  EmployeeBasicInfo;
     endDate:             number;
+    fixedCharge?:        number;
     lastName:            string;
     name:                string;
+    renovationPeriod?:   number;
     startDate:           number;
     status:              string;
     total:               number;
@@ -16,10 +19,11 @@ export interface CreditTable {
 }
 
 export interface CustomerBasicInfo {
-    address?:    string;
-    customerId:  string;
-    fullName:    string;
-    phoneNumber: string;
+    address?:             string;
+    customerId:           string;
+    fullName:             string;
+    phoneNumber:          string;
+    threeWordsUbication?: string;
 }
 
 export interface EmployeeBasicInfo {

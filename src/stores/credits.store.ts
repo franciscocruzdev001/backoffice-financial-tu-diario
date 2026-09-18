@@ -6,7 +6,6 @@ import axios from "../shared/utils/axiosUtils"
 import { get } from 'lodash';
 import { CreditTable } from '@/types/CreditTable';
 import { SearchCreditsRequest } from '@/types/SearchCreditsRequest';
-import { EMPLOYEE_WALLET_OPTIONS } from '@/shared/constants/catalogs/employeeWallets.catalog';
 
 interface CreditStoreState {
     creditsData: {
@@ -38,13 +37,10 @@ export const useCreditStore = create<CreditStoreState>()(
                 console.log(response.data);
 
                 // Mapea ICreditsWithCustomerBasicInformation (backend, ya con el
-                // $lookup real de customers) -> CreditTable (frontend). El empleado
-                // sigue resolviéndose LOCAL (el backend no hace join de usuarios).
+                // $lookup real de customers Y de users) -> CreditTable (frontend).
                 const mappedRecords: CreditTable[] = get(response.data, "data.records", []).map((credit: any) => {
-                    const employee = EMPLOYEE_WALLET_OPTIONS.find(
-                        (e) => e.optionId === credit.userId?.toString()
-                    );
                     const customerInfo = get(credit, 'customerInfo[0]');
+                    const employeeInfo = get(credit, 'employeeInfo[0]');
 
                     return {
                         creditId: get(credit, '_id', ''),
@@ -59,19 +55,25 @@ export const useCreditStore = create<CreditStoreState>()(
                         transactionStatus: get(credit, 'transactionStatus', ''),
                         amountDue: get(credit, 'amountDue', 0),
                         amountPaid: get(credit, 'amountPaid', 0),
+                        // Necesarios para llenar la plantilla de tarjeta (PDF): abono
+                        // fijo, plazo (num. de cobros) y periodo de renovación.
+                        fixedCharge: get(credit, 'fixedCharge', 0),
+                        chargePeriods: get(credit, 'chargeRules.chargePeriods', 0),
+                        renovationPeriod: get(credit, 'chargeRules.renovationPeriod', 0),
                         customerBasicInfo: customerInfo ? {
                             customerId: get(credit, 'customerId', ''),
                             fullName: `${get(customerInfo, 'contact.name', '')} ${get(customerInfo, 'contact.lastName', '')}`.trim(),
                             phoneNumber: get(customerInfo, 'contact.phoneNumber', ''),
                             address: get(customerInfo, 'contact.address', ''),
+                            threeWordsUbication: get(customerInfo, 'threeWordsUbication', ''),
                         } : undefined,
-                        // El id de empleado viene directo del crédito (credit.userId);
-                        // el match contra EMPLOYEE_WALLET_OPTIONS es solo para enriquecer
-                        // nombre/telefono si existe, pero no debe bloquear mostrar el id.
+                        // Nombre/telefono real del cobrador, ya resuelto por el
+                        // backend ($lookup a "users"). userId siempre se muestra
+                        // aunque no haya match (mismo criterio que customerBasicInfo).
                         employeeBasicInfo: credit.userId ? {
                             userId: credit.userId.toString(),
-                            fullName: employee?.label ?? '',
-                            phoneNumber: employee?.phoneNumber ?? '',
+                            fullName: `${get(employeeInfo, 'contact.name', '')} ${get(employeeInfo, 'contact.lastName', '')}`.trim(),
+                            phoneNumber: get(employeeInfo, 'contact.phoneNumber', ''),
                         } : undefined,
                     };
                 });

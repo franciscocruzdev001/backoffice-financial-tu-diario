@@ -20,6 +20,9 @@
                 },
                 "address": {
                     "type": "string"
+                },
+                "threeWordsUbication": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -84,6 +87,15 @@
             "type": "number"
         },
         "amountPaid": {
+            "type": "number"
+        },
+        "fixedCharge": {
+            "type": "number"
+        },
+        "chargePeriods": {
+            "type": "number"
+        },
+        "renovationPeriod": {
             "type": "number"
         },
         "customerBasicInfo": {

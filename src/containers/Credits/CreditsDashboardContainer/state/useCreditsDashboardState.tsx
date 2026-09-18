@@ -5,7 +5,9 @@ import { DashboardTableProps, TableSelectionProps } from '@/components/molecules
 import { DashboardTableCatalog, DashboardTableCatalogEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
 import { Category, Entities } from '@/shared/constants/table_types_data';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
-import { getFullName } from '@/shared/utils/ProcessDataUtils';
+import { getDate, getFullName, formatearMoneda } from '@/shared/utils/ProcessDataUtils';
+import { downloadCreditCardsSheetPdf, type CreditCardTemplateData } from '@/shared/utils/CreditCardPdfUtils';
+import { CREDIT_CARD_TEMPLATES, DEFAULT_CREDIT_CARD_TEMPLATE_ID, type CreditCardTemplateOption } from '@/shared/constants/catalogs/credit_card_templates.catalog';
 import { useCreditStore } from '@/stores/credits.store';
 import { CreditTable } from '@/types/CreditTable';
 import { FiltersItems } from '@/types/SearchCreditsRequest';
@@ -35,6 +37,9 @@ export interface GenerateCardButtonProps {
     label: string;
     disabled: boolean;
     onClick: () => void;
+    templateOptions: CreditCardTemplateOption[];
+    selectedTemplateId: string;
+    onTemplateChange: (templateId: string) => void;
 }
 
 export interface IUseCreditsDashboardState {
@@ -171,30 +176,56 @@ export const useCreditsDashboardState = (): IUseCreditsDashboardState => {
 
     const clearSelection = () => setSelectedItemsMap({});
 
-    // Placeholder simple solo abre una ventana con una tarjeta
-    // básica por cada crédito seleccionado y dispara el diálogo de impresión.
-    const handleGenerateCard = () => {
+    // Llena la plantilla elegida (CREDIT_CARD_TEMPLATES) con pdf-lib y arma
+    // UN pdf con todas las tarjetas seleccionadas, 4 por hoja.
+    const [isGeneratingCards, setIsGeneratingCards] = useState<boolean>(false);
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string>(DEFAULT_CREDIT_CARD_TEMPLATE_ID);
+
+    const mapCreditToCardData = (
+        credit: CreditTable,
+        collectorNameStyle: 'full' | 'firstName' = 'full'
+    ): CreditCardTemplateData => {
+        const collectorFullName = credit.employeeBasicInfo?.fullName || credit.employeeBasicInfo?.userId || '';
+        const creditCollector = collectorNameStyle === 'firstName'
+            ? collectorFullName.trim().split(/\s+/)[0] ?? ''
+            : collectorFullName;
+
+        return {
+            joinDate: getDate(credit.created),
+            endDate: getDate(credit.endDate),
+            customerName: getFullName(credit.name, credit.lastName),
+            address: credit.customerBasicInfo?.address ?? '',
+            phoneNumber: credit.customerBasicInfo?.phoneNumber ?? '',
+            amount: formatearMoneda(credit.total),
+            paymentFees: credit.chargePeriods ? String(credit.chargePeriods) : '',
+            fixedCharge: formatearMoneda(credit.fixedCharge ?? 0),
+            paymentRenovation: credit.renovationPeriod ? String(credit.renovationPeriod) : '',
+            threeWords: credit.customerBasicInfo?.threeWordsUbication ?? '',
+            creditCollector,
+            phoneNumberCollector: credit.employeeBasicInfo?.phoneNumber ?? '',
+        };
+    };
+
+    const handleGenerateCard = async () => {
         const selectedCredits = Object.values(selectedItemsMap);
-        const printWindow = window.open('', '_blank', 'width=420,height=600');
-        if (!printWindow) return;
+        if (selectedCredits.length === 0) return;
 
-        const cardsHtml = selectedCredits.map((credit) => `
-            <div style="border:1px solid #ccc; border-radius:8px; padding:16px; margin-bottom:16px; font-family: sans-serif;">
-                <h3 style="margin:0 0 8px;">${getFullName(credit.name, credit.lastName)}</h3>
-                <p style="margin:4px 0;">Crédito: ${credit.creditId}</p>
-                <p style="margin:4px 0;">Total: $${credit.total}</p>
-            </div>
-        `).join('');
+        const template = CREDIT_CARD_TEMPLATES.find((t) => t.id === selectedTemplateId) ?? CREDIT_CARD_TEMPLATES[0]!;
 
-        printWindow.document.write(`
-            <html>
-                <head><title>Tarjeta de crédito</title></head>
-                <body>${cardsHtml}</body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+        setIsGeneratingCards(true);
+        try {
+            await downloadCreditCardsSheetPdf(
+                selectedCredits.map((credit) => mapCreditToCardData(credit, template.collectorNameStyle)),
+                template.url,
+                template.layout,
+                template.contentBox,
+                `tarjetas_creditos_${Date.now()}.pdf`
+            );
+        } catch (error) {
+            console.error('Error al generar el PDF de tarjetas:', error);
+        } finally {
+            setIsGeneratingCards(false);
+        }
     };
 
     const selection: TableSelectionProps = {
@@ -363,9 +394,12 @@ export const useCreditsDashboardState = (): IUseCreditsDashboardState => {
 
     return {
         generateCardButtonProps: {
-            label: "Generar tarjeta",
-            disabled: selectedIds.size === 0,
+            label: isGeneratingCards ? "Generando..." : "Generar tarjeta",
+            disabled: selectedIds.size === 0 || isGeneratingCards,
             onClick: handleGenerateCard,
+            templateOptions: CREDIT_CARD_TEMPLATES,
+            selectedTemplateId,
+            onTemplateChange: setSelectedTemplateId,
         },
         dashboardHeaderProps: {
             tittle: "Créditos",
