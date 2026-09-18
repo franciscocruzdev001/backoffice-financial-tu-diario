@@ -11,8 +11,8 @@ import { EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallet
 
 
 const fetchEmployees = (request: SearchEmployeesRequest) => {
-    return axios.post<{ total: number, records: any[] }>("http://localhost:4000/authorizer/searchEmployees", request);
-    // return axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/authorizer/searchEmployees", request);
+    // return axios.post<{ total: number, records: any[] }>("http://localhost:4000/authorizer/searchEmployees", request);
+    return axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/authorizer/searchEmployees", request);
 };
 
 interface EmployeeStoreState {
@@ -74,8 +74,8 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
                 set(state => ({ employeeOptions: options }))
             },
             createUser: async (request: Users) => {
-                const response = await axios.post<{ mensaje: string, data: boolean }>("http://localhost:4000/authorizer/createUser", request);
-                // const response = await axios.post<{ mensaje: string, data: boolean }>("https://credit-saas-gateway.onrender.com/authorizer/createUser", request);
+                // const response = await axios.post<{ mensaje: string, data: boolean }>("http://localhost:4000/authorizer/createUser", request);
+                const response = await axios.post<{ mensaje: string, data: boolean }>("https://credit-saas-gateway.onrender.com/authorizer/createUser", request);
                 console.log(response.data);
                 set(state => ({
                     notification: {

@@ -32,8 +32,8 @@ export const useCreditStore = create<CreditStoreState>()(
                 entityName: DashboardTableCatalogEnum
             }) => set(state => ({ creditsData: value })),
             searchCreditsData: async (request: SearchCreditsRequest) => {
-                const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCredits", request);
-                // const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCredits", request);
+                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCredits", request);
+                const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCredits", request);
                 console.log(response.data);
 
                 // Mapea ICreditsWithCustomerBasicInformation (backend, ya con el

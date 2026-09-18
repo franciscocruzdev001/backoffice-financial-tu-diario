@@ -12,8 +12,8 @@ import { CustomerOption } from '@/shared/constants/catalogs/customers.catalog';
 // pegan al mismo endpoint, solo cambia en qué cajón del store guarda cada
 // una el resultado (ver comentario de customerOptions más abajo).
 const fetchCustomers = (request: SearchCustomersRequest) => {
-    return axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCustomers", request);
-    // return axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCustomers", request);
+    // return axios.post<{ total: number, records: any[] }>("http://localhost:4001/credits/searchCustomers", request);
+    return axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/credits/searchCustomers", request);
 };
 
 interface CustomerStoreState {
