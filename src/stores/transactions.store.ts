@@ -54,6 +54,14 @@ export const useTransactionStore = create<TransactionStoreState>()(
                             phoneNumber: get(customerInfo, 'contact.phoneNumber', ''),
                             address: get(customerInfo, 'contact.address', ''),
                         } : undefined,
+                        // Permite distinguir en la tabla 2 transacciones del mismo
+                        // cliente/monto que en realidad apuntan a créditos distintos.
+                        creditBasicInfo: creditInfo ? {
+                            creditId: get(creditInfo, '_id', ''),
+                            total: get(creditInfo, 'creditAmount', 0),
+                            amountPaid: get(creditInfo, 'amountPaid', 0),
+                            amountDue: get(creditInfo, 'amountDue', 0),
+                        } : undefined,
                     };
                 });
 

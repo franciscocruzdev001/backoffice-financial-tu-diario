@@ -39,12 +39,23 @@ export const TransactionCells: React.FC<TransactionCellsProps> = (props: Transac
       </Typography>
     ),
     [TransactionColumnsEnum.description]: (
-      <Typography variant="body2" color="text.secondary">
-        {[
-          get(props.transaction, 'description', ''),
-          get(props.transaction, 'customerBasicInfo.fullName', ''),
-        ].filter(Boolean).join(' - ') || '—'}
-      </Typography>
+      <Box>
+        <Typography variant="body2" color="text.secondary">
+          {[
+            get(props.transaction, 'description', ''),
+            get(props.transaction, 'customerBasicInfo.fullName', ''),
+          ].filter(Boolean).join(' - ') || '—'}
+        </Typography>
+        {props.transaction.creditBasicInfo && (
+          // Distingue transacciones del mismo cliente/monto que en realidad
+          // apuntan a créditos distintos: avance de pago + últimos 4 del id.
+          <Typography variant="caption" color="text.disabled">
+            {`Crédito ...${get(props.transaction, 'creditBasicInfo.creditId', '').slice(-4)} · Avance: ${
+              formatAmount(get(props.transaction, 'creditBasicInfo.amountPaid', 0), props.transaction.currency)
+            } de ${formatAmount(get(props.transaction, 'creditBasicInfo.total', 0), props.transaction.currency)}`}
+          </Typography>
+        )}
+      </Box>
     ),
     [TransactionColumnsEnum.total]: (
       <Typography variant="body2" fontWeight={500}>
