@@ -1,8 +1,8 @@
 import { DashboardHeaderProps } from '@/components/atoms/DashboardHeader/DashboardHeader';
 import { ModalDeleteItemConfirmDialogProps } from '@/components/molecules/ModalDialog/ModalDeleteItemConfirmDialog/ModalDeleteItemConfirmDialog';
 import { SnackbarNotificationProps } from '@/components/molecules/SnackbarNotification/SnackbarNotification';
-import { DashboardTableProps, TableSelectionProps } from '@/components/molecules/Table/DahsboardTable/DashboardTable';
-import { DashboardTableCatalog, DashboardTableCatalogEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
+import { DashboardTableProps, TableSelectionProps, TableSortProps } from '@/components/molecules/Table/DahsboardTable/DashboardTable';
+import { DashboardTableCatalog, DashboardTableCatalogEnum, TransactionColumnsEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
 import { ModalApproveTransactionsDialogProps, TransactionTypeTotal } from '@/components/molecules/ModalDialog/ModalApproveTransactionsDialog/ModalApproveTransactionsDialog';
 import { ModalPreviewTransactionsDialogProps } from '@/components/molecules/ModalDialog/ModalPreviewTransactionsDialog/ModalPreviewTransactionsDialog';
 import { ModalRejectTransactionsDialogProps } from '@/components/molecules/ModalDialog/ModalRejectTransactionsDialog/ModalRejectTransactionsDialog';
@@ -92,6 +92,26 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     const [rowsPerPageChange, setRowsPerPageChange] = useState<number>(5);
 
     const [renderColumnsTable, setRenderColumnsTable] = useState<IColumnsTable[]>(DashboardTableCatalog[DashboardTableCatalogEnum.transactions]);
+    /**
+     * Ordenamiento local de la columna Descripción — ordena por nombre del
+     * cliente (customerBasicInfo.fullName) o, si no hay cliente asociado, por
+     * la descripción cruda. Es puramente local: solo reordena el array ya
+     * cargado en transactionsData, no vuelve a pedir al backend.
+     */
+    const [sortColumnId, setSortColumnId] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+    const getDescriptionSortValue = (item: TransactionTable): string =>
+        get(item, 'customerBasicInfo.fullName', '') || get(item, 'description', '');
+
+    const handleSortClick = (columnId: string) => {
+        if (sortColumnId === columnId) {
+            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setSortColumnId(columnId);
+            setSortDirection('asc');
+        }
+    };
     const [showModalDeleteItemConfirm, setShowModalDeleteItemConfirm] = useState<boolean>(false);
     const [showModalApproveConfirm, setShowModalApproveConfirm] = useState<boolean>(false);
     const [showModalPreview, setShowModalPreview] = useState<boolean>(false);
@@ -408,8 +428,18 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         });
     }, [transactionsData.entityName]);
 
+    const sortedRecords: TransactionTable[] = sortColumnId
+        ? [...(transactionsData.records as TransactionTable[])].sort((a, b) => {
+            const compare = getDescriptionSortValue(a).localeCompare(getDescriptionSortValue(b), 'es');
+            return sortDirection === 'asc' ? compare : -compare;
+        })
+        : (transactionsData.records as TransactionTable[]);
 
-
+    const sort: TableSortProps = {
+        columnId: sortColumnId,
+        direction: sortDirection,
+        onSortClick: handleSortClick,
+    };
 
     return {
         dashboardHeaderProps: {
@@ -434,11 +464,12 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
                 onPageChange: handleOnPageChange,
                 onRowsPerPageChange: handleOnRowsPerPageChange
             },
-            data: transactionsData,
+            data: { ...transactionsData, records: sortedRecords },
             renderColumnsTable,
             handleOnEditClick,
             handleOnDeleteClick,
             selection,
+            sort,
         },
         snackbarNotificationProps: {
             open: false,

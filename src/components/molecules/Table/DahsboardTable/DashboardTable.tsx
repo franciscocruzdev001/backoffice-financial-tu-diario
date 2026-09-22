@@ -8,6 +8,7 @@ import {
     TablePagination,
     TablePaginationProps,
     TableRow,
+    TableSortLabel,
 } from '@mui/material';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import React from 'react';
@@ -36,6 +37,16 @@ export interface TableSelectionProps {
     getId: (item: Entities) => string;
 }
 
+// Ordenamiento local — opcional, solo la usan las columnas marcadas
+// `sortable: true` (por ahora Descripción en Transactions). El ordenamiento
+// del array ya viene resuelto desde el estado del container, este componente
+// solo dibuja el TableSortLabel y dispara onSortClick.
+export interface TableSortProps {
+    columnId: string | null;
+    direction: 'asc' | 'desc';
+    onSortClick: (columnId: string) => void;
+}
+
 export interface DashboardTableStateProps {
     //filterOptions: Record<Category, string[]>;
     toolBarFilterProps: ToolbarDashboardFilterProps;
@@ -43,6 +54,7 @@ export interface DashboardTableStateProps {
     renderColumnsTable: IColumnsTable[];
     data: { records: Entities[], total: number, entityName: DashboardTableCatalogEnum }
     selection?: TableSelectionProps;
+    sort?: TableSortProps;
 }
 
 export interface DashboardTableFunctionsProps {
@@ -89,7 +101,17 @@ const DashboardTable: React.FC<DashboardTableProps> = (props: DashboardTableProp
                                             minWidth: column.minWidth
                                         }}
                                     >
-                                        <strong style={{ marginLeft: column.titleOffset }}>{column.tittle}</strong>
+                                        {column.sortable && props.sort ? (
+                                            <TableSortLabel
+                                                active={props.sort.columnId === column.columnTableId}
+                                                direction={props.sort.columnId === column.columnTableId ? props.sort.direction : 'asc'}
+                                                onClick={() => props.sort!.onSortClick(column.columnTableId)}
+                                            >
+                                                <strong style={{ marginLeft: column.titleOffset }}>{column.tittle}</strong>
+                                            </TableSortLabel>
+                                        ) : (
+                                            <strong style={{ marginLeft: column.titleOffset }}>{column.tittle}</strong>
+                                        )}
                                     </TableCell>
                                 ))}
                             </TableRow>

@@ -11,6 +11,7 @@ import { TRANSACTION_STATUS_LABELS } from '@/shared/constants/catalogs/credit_fi
 import { TransactionStatusEnum } from '@/infrastructure/constants/credit/TransactionStatusEnum';
 import { TransactionColumnsEnum } from '@/shared/constants/catalogs/dashboard_table_catalogs';
 import { TransactionTable } from '@/types/TransactionTable';
+import { get } from 'lodash';
 
 export interface TransactionCellsStateProps {
   columnTable: IColumnsTable;
@@ -39,7 +40,10 @@ export const TransactionCells: React.FC<TransactionCellsProps> = (props: Transac
     ),
     [TransactionColumnsEnum.description]: (
       <Typography variant="body2" color="text.secondary">
-        {`${props.transaction.description} ${props.transaction.customerBasicInfo?.fullName}`}
+        {[
+          get(props.transaction, 'description', ''),
+          get(props.transaction, 'customerBasicInfo.fullName', ''),
+        ].filter(Boolean).join(' - ') || '—'}
       </Typography>
     ),
     [TransactionColumnsEnum.total]: (

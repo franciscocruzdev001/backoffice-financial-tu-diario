@@ -3,4 +3,5 @@ export interface IColumnsTable {
     tittle: string;
     minWidth?: number;
     titleOffset?: number;
+    sortable?: boolean;
 }
