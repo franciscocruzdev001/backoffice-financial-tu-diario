@@ -7,6 +7,7 @@ import { ModalApproveTransactionsDialogProps, TransactionTypeTotal } from '@/com
 import { ModalPreviewTransactionsDialogProps } from '@/components/molecules/ModalDialog/ModalPreviewTransactionsDialog/ModalPreviewTransactionsDialog';
 import { ModalRejectTransactionsDialogProps } from '@/components/molecules/ModalDialog/ModalRejectTransactionsDialog/ModalRejectTransactionsDialog';
 import { TransactionStatusEnum } from '@/infrastructure/constants/credit/TransactionStatusEnum';
+import { ChargeFrequencyEnum } from '@/infrastructure/constants/credit/ChargeFrequencyEnum';
 import { Category, Entities } from '@/shared/constants/table_types_data';
 import { IColumnsTable } from '@/shared/interfaces/IColumnsTable';
 import { useTransactionStore } from '@/stores/transactions.store';
@@ -23,6 +24,11 @@ import { useEffect, useState } from 'react'
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
     "estatus": ["pending", "approved", "cancelled"],
     "movimiento": ["credit", "payment", "transfer", "deposit"],
+    // Filtra por la regla de cobro (chargeRules.chargeFrequency) del crédito
+    // asociado a la transacción, vía join en el backend (findTransactionsJoinCredit)
+    // — no todas las transacciones tienen crédito asociado (solo las de pago y
+    // las de desembolso), las demás quedan fuera cuando se usa este filtro.
+    "frecuencia": [ChargeFrequencyEnum.DAILY, ChargeFrequencyEnum.WEEKLY],
     //"registro": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     //  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
 }
@@ -313,6 +319,9 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
         const tempFilterItems: FiltersItems = {
             status: defaultTo(documentFilter["estatus"], []).map((filter) => filter.value),
             transactionType: defaultTo(documentFilter["movimiento"], []).map((filter) => filter.value),
+            // Igual que status/transactionType: arreglo con $in en el backend, así
+            // se puede filtrar por "daily" y "weekly" a la vez.
+            chargeFrequency: defaultTo(documentFilter["frecuencia"], []).map((filter) => filter.value),
             creditorCompanyId,
             // La fecha se maneja como number. endDate se lleva al final del día
             // (23:59:59.999) porque range.endDate es una fecha sin hora
