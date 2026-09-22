@@ -1,8 +1,11 @@
+import { CustomerBasicInfo } from './CreditTable';
+
 export interface TransactionTable {
     _id?:                string;
     createdAt?:          string;
     creditIdSource?:     string;
     currency?:           string;
+    customerBasicInfo?:  CustomerBasicInfo;
     description?:        string;
     destinationAccount?: DestinationAccountObject;
     sourceAccount?:      SourceAccountObject;

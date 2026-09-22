@@ -39,9 +39,27 @@ export const useTransactionStore = create<TransactionStoreState>()(
                 // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4003/transactions/SearchTransactions", request);
                 const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/transactions/SearchTransactions", request);
                 console.log(response.data);
+
+                // Mapea la transacción cruda del backend (con $lookup anidado
+                // creditInfo -> customerInfo) -> TransactionTable (frontend).
+                const mappedRecords: TransactionTable[] = get(response.data, "data.records", []).map((transaction: any) => {
+                    const creditInfo = get(transaction, 'creditInfo[0]');
+                    const customerInfo = get(creditInfo, 'customerInfo[0]');
+
+                    return {
+                        ...transaction,
+                        customerBasicInfo: customerInfo ? {
+                            customerId: get(creditInfo, 'customerId', ''),
+                            fullName: `${get(customerInfo, 'contact.name', '')} ${get(customerInfo, 'contact.lastName', '')}`.trim(),
+                            phoneNumber: get(customerInfo, 'contact.phoneNumber', ''),
+                            address: get(customerInfo, 'contact.address', ''),
+                        } : undefined,
+                    };
+                });
+
                 set(state => ({
                     transactionsData: {
-                        records: get(response.data, "data.records", []),
+                        records: mappedRecords,
                         total: get(response.data, "data.total", 0),
                         entityName: DashboardTableCatalogEnum.transactions
                     }

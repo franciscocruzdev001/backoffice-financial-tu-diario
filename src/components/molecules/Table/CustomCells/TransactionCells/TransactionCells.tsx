@@ -39,7 +39,7 @@ export const TransactionCells: React.FC<TransactionCellsProps> = (props: Transac
     ),
     [TransactionColumnsEnum.description]: (
       <Typography variant="body2" color="text.secondary">
-        {props.transaction.description || '—'}
+        {`${props.transaction.description} ${props.transaction.customerBasicInfo?.fullName}`}
       </Typography>
     ),
     [TransactionColumnsEnum.total]: (
