@@ -18,6 +18,7 @@ import { EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallet
 import { CustomerOption } from '@/shared/constants/catalogs/customers.catalog';
 import { useAuthStore } from '@/stores/auth.store';
 import { useCustomerStore } from '@/stores/customers.store';
+import { startOfDayLocal, endOfDayLocal } from '@/shared/utils/dateRangeTimezone';
 import { useEmployeeStore } from '@/stores/employees.store';
 import { type DateRangeValue } from '@/components/molecules/Table/Filter/DateRangeSection/DateRangeSection';
 
@@ -309,13 +310,12 @@ export const useCreditsDashboardState = (): IUseCreditsDashboardState => {
             creditorCompanyId,
             userId: selectedEmployee?.optionId,
             customerId: selectedCustomer?.optionId,
-            // La fecha se maneja como number. endDate se lleva al final del día
-            // (23:59:59.999) porque range.endDate es una fecha sin hora
-            // ("YYYY-MM-DD"), mismo criterio que useTransactionsDashboardState.
+            // startOfDayLocal/endOfDayLocal: ver dateRangeTimezone.ts — evita
+            // interpretar la fecha como medianoche UTC en vez de México (UTC-6).
             ...(newDateRange.range ? {
                 createdRangeDate: {
-                    startDate: new Date(newDateRange.range.startDate).getTime(),
-                    endDate: new Date(`${newDateRange.range.endDate}T23:59:59.999Z`).getTime(),
+                    startDate: startOfDayLocal(newDateRange.range.startDate),
+                    endDate: endOfDayLocal(newDateRange.range.endDate),
                 },
             } : {}),
         }

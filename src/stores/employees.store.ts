@@ -63,7 +63,7 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
             searchEmployeeOptions: async (request: SearchEmployeesRequest) => {
                 const response = await fetchEmployees(request);
                 console.log(response.data);
-                // Mapea el doc crudo de IUsers (userName, contact.phoneNumber) 
+                // Mapea el doc crudo de IUsers (userName, contact.phoneNumber)
                 const options: EmployeeWalletOption[] = get(response.data, "data.records", []).map((employee: any) => ({
                     optionId: get(employee, '_id', ''),
                     label: get(employee, 'userName', ''),

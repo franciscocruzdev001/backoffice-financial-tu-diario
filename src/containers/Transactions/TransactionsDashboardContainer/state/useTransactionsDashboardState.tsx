@@ -19,6 +19,7 @@ import { EMPLOYEE_WALLET_OPTIONS, EmployeeWalletOption } from '@/shared/constant
 import { useAuthStore } from '@/stores/auth.store';
 import { defaultTo, get } from 'lodash';
 import { useEffect, useState } from 'react'
+import { startOfDayLocal, endOfDayLocal } from '@/shared/utils/dateRangeTimezone';
 
 // Mismo enum real de status que usa transactionsSchema
 const CATALOG_FILTER_OPTIONS: Record<Category, string[]> = {
@@ -343,15 +344,14 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
             // se puede filtrar por "daily" y "weekly" a la vez.
             chargeFrequency: defaultTo(documentFilter["frecuencia"], []).map((filter) => filter.value),
             creditorCompanyId,
-            // La fecha se maneja como number. endDate se lleva al final del día
-            // (23:59:59.999) porque range.endDate es una fecha sin hora
-            // ("YYYY-MM-DD"), y new Date(...) la interpreta como medianoche UTC —
-            // dejarla así excluye cualquier transacción de ese mismo día ocurrida
-            // después de medianoche (mismo bug que se corrigió en el mobile).
+            // startOfDayLocal/endOfDayLocal interpretan la fecha como medianoche
+            // / fin de día en horario de México (UTC-6), no en UTC — ver
+            // dateRangeTimezone.ts para el porqué (new Date("YYYY-MM-DD") a
+            // secas siempre cae en medianoche UTC, corriendo el rango 6 horas).
             ...(newDateRange.range ? {
                 createdRangeDate: {
-                    startDate: new Date(newDateRange.range.startDate).getTime(),
-                    endDate: new Date(`${newDateRange.range.endDate}T23:59:59.999Z`).getTime(),
+                    startDate: startOfDayLocal(newDateRange.range.startDate),
+                    endDate: endOfDayLocal(newDateRange.range.endDate),
                 },
             } : {}),
             // Si hay un trabajador seleccionado, acota la búsqueda a su wallet
