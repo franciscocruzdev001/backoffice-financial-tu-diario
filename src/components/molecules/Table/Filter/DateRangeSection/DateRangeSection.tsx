@@ -39,7 +39,14 @@ const PRESET_OPTIONS: { key: PeriodPreset; label: string }[] = [
     { key: 'ULTIMO_ANIO', label: 'Último año' },
 ];
 
-const toIso = (d: Date) => d.toISOString().slice(0, 10);
+// Zona horaria fija del negocio (México, sin horario de verano desde 2022) —
+// ver dateRangeTimezone.ts. NO se puede usar d.toISOString().slice(0,10) a
+// secas: eso da la fecha calendario en UTC, no en México. Pasadas las 6pm
+// hora de México (cuando UTC ya cruzó a medianoche), "Hoy" calculaba MAÑANA
+// en vez de hoy, y el filtro terminaba buscando un día que aún no ocurre —
+// por eso no traía ningún resultado.
+const MX_UTC_OFFSET_MS = 6 * 60 * 60 * 1000;
+const toIso = (d: Date) => new Date(d.getTime() - MX_UTC_OFFSET_MS).toISOString().slice(0, 10);
 
 // Traduce un preset a fechas concretas — reutilizable donde se necesite.
 export const presetToRange = (preset: PeriodPreset): DateRange | null => {
