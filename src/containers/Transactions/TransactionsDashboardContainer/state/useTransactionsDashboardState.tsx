@@ -15,8 +15,9 @@ import { FiltersItems } from '@/types/SearchTransactionsRequest';
 import { TransactionTable } from '@/types/TransactionTable';
 import { TransactionChangeStatusBatchLogs } from '@/types/TransactionChangeStatusBatchLogs';
 import { type DateRangeValue } from '@/components/molecules/Table/Filter/DateRangeSection/DateRangeSection';
-import { EMPLOYEE_WALLET_OPTIONS, EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallets.catalog';
+import { EmployeeWalletOption } from '@/shared/constants/catalogs/employeeWallets.catalog';
 import { useAuthStore } from '@/stores/auth.store';
+import { useEmployeeStore } from '@/stores/employees.store';
 import { defaultTo, get } from 'lodash';
 import { useEffect, useState } from 'react'
 import { startOfDayLocal, endOfDayLocal } from '@/shared/utils/dateRangeTimezone';
@@ -74,6 +75,18 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
     // creditorCompanyId real del admin autenticado (no un id de prueba fijo,
     // cada admin solo debe ver las transacciones de su propia empresa)
     const creditorCompanyId = useAuthStore((state) => state.user?.creditorCompanyId ?? '');
+
+    // Trabajadores + su wallet (walletId/accountNumber) para el select de
+    // "filtrar por trabajador" del toolbar — mismo searchEmployees que usa
+    // Credits, sin generalSearch (trae el catálogo completo de la empresa).
+    const { employeeOptions, searchEmployeeOptions } = useEmployeeStore();
+    useEffect(() => {
+        if (!creditorCompanyId) return;
+        searchEmployeeOptions({
+            filtersItems: { creditorCompanyId },
+            pagination: { limit: 100, pageNumber: 0 },
+        });
+    }, [creditorCompanyId]);
     /**
          * Filter State
          */
@@ -453,7 +466,7 @@ export const useTransactionsDashboardState = (): IUseTransactionsDashboardState 
                 dateRange,
                 // Único lugar de la app donde se pasa employeeOptions al toolbar,
                 // por eso el Autocomplete de trabajador solo aparece en Transactions.
-                employeeOptions: EMPLOYEE_WALLET_OPTIONS,
+                employeeOptions,
                 handleOnChangeFilters
             },
             tablePaginationProps: {

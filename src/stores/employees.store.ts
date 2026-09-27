@@ -63,13 +63,16 @@ export const useEmployeeStore = create<EmployeeStoreState>()(
             searchEmployeeOptions: async (request: SearchEmployeesRequest) => {
                 const response = await fetchEmployees(request);
                 console.log(response.data);
-                // Mapea el doc crudo de IUsers (userName, contact.phoneNumber)
+                // Mapea el doc crudo de IUsers (userName, contact.phoneNumber) —
+                // ahora también trae walletId/accountNumber (join con wallets en
+                // findEmployeesJoinWallet, servicio authorizer), lo usa el select
+                // de "filtrar Transacciones por trabajador".
                 const options: EmployeeWalletOption[] = get(response.data, "data.records", []).map((employee: any) => ({
                     optionId: get(employee, '_id', ''),
                     label: get(employee, 'userName', ''),
                     phoneNumber: get(employee, 'contact.phoneNumber', ''),
-                    walletId: '',
-                    accountNumber: '',
+                    walletId: get(employee, 'walletId', ''),
+                    accountNumber: get(employee, 'accountNumber', ''),
                 }));
                 set(state => ({ employeeOptions: options }))
             },

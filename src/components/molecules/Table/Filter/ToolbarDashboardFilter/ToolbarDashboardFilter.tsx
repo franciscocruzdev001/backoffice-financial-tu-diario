@@ -81,7 +81,7 @@ export const ToolbarDashboardFilter: React.FC<ToolbarDashboardFilterProps> = (pr
             <Box sx={{ ...classes.toolbarContainer }}>
                 {/* Left: chips area */}
                 <ChipsArea
-                    chipsData={filterByModal.activeFilters}
+                    chipsData={chipsArea.chipsData}
                     handleClearAll={chipsArea.handleClearAll}
                     handleRemoveChip={chipsArea.handleRemoveChip}
                 />
