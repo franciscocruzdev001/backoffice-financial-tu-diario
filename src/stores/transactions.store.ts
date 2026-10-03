@@ -36,8 +36,8 @@ export const useTransactionStore = create<TransactionStoreState>()(
                 entityName: DashboardTableCatalogEnum
             }) => set(state => ({ transactionsData: value })),
             searchTransactionsData: async (request: SearchTransactionsRequest) => {
-                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4003/transactions/SearchTransactions", request);
                 const response = await axios.post<{ total: number, records: any[] }>("https://credit-saas-gateway.onrender.com/transactions/SearchTransactions", request);
+                // const response = await axios.post<{ total: number, records: any[] }>("http://localhost:4003/transactions/SearchTransactions", request);
                 console.log(response.data);
 
                 // Mapea la transacción cruda del backend (con $lookup anidado
@@ -74,16 +74,16 @@ export const useTransactionStore = create<TransactionStoreState>()(
                 }))
             },
             approveTransactionsOperations: async (transactionIds: string[]) => {
-                // const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("http://localhost:4003/transactions/approveTransactionsOperations", { transactionIds });
                 const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("https://credit-saas-gateway.onrender.com/transactions/approveTransactionsOperations", { transactionIds });
+                // const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("http://localhost:4003/transactions/approveTransactionsOperations", { transactionIds });
                 return get(response.data, "data", {
                     changeStatus: "approved",
                     resumeTotalsByTransactionType: []
                 });
             },
             cancelTransactionsOperations: async (transactionIds: string[]) => {
-                // const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("http://localhost:4003/transactions/cancelTransactionsOperations", { transactionIds });
                 const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("https://credit-saas-gateway.onrender.com/transactions/cancelTransactionsOperations", { transactionIds });
+                // const response = await axios.post<{ data: TransactionChangeStatusBatchLogs }>("http://localhost:4003/transactions/cancelTransactionsOperations", { transactionIds });
                 return get(response.data, "data", {
                     changeStatus: "cancelled",
                     resumeTotalsByTransactionType: []

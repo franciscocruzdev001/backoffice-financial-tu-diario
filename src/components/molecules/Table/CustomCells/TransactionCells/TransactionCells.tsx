@@ -69,12 +69,18 @@ export const TransactionCells: React.FC<TransactionCellsProps> = (props: Transac
         size="small"
       />
     ),
-    [TransactionColumnsEnum.createdAt]: (
-      <Typography variant="body2" color="text.secondary">
-        {props.transaction.createdAt
-          ? getDate(new Date(props.transaction.createdAt).getTime())
-          : '—'}
-      </Typography>
+    [TransactionColumnsEnum.createdAt]: props.transaction.createdAt ? (
+      // Fecha y, debajo, la hora (hora local del navegador)
+      <Box>
+        <Typography variant="body2" color="text.secondary">
+          {getDate(new Date(props.transaction.createdAt).getTime())}
+        </Typography>
+        <Typography variant="caption" color="text.disabled">
+          {getDate(new Date(props.transaction.createdAt).getTime(), "hh:mm a")}
+        </Typography>
+      </Box>
+    ) : (
+      <Typography variant="body2" color="text.secondary">—</Typography>
     ),
     [TransactionColumnsEnum.actions]: (
       <Box sx={{ display: 'flex', gap: 1 }}>
