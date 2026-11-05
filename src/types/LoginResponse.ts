@@ -5,6 +5,7 @@ export interface LoginResponse {
 
 export interface User {
     _id:                  string;
+    accountNumber?:       string;
     creditorCompanyId:    string;
     creditorCompanyInfo?: CreditorCompanyInfo;
     email:                string;
@@ -12,7 +13,6 @@ export interface User {
     roles:                string[];
     userName:             string;
     walletId?:            string;
-    accountNumber?:       string;
 }
 
 export interface CreditorCompanyInfo {

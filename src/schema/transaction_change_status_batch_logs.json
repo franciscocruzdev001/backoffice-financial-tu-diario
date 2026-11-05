@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://TransactionChangeStatusBatchLogs",
+    "title": "TransactionChangeStatusBatchLogs",
+    "type": "object",
+    "additionalProperties": false,
+    "definitions": {
+        "TransactionResume": {
+            "type": "object",
+            "title": "TransactionResume",
+            "additionalProperties": false,
+            "properties": {
+                "amountTransaction": {
+                    "type": "number"
+                },
+                "transactionId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "amountTransaction",
+                "transactionId"
+            ]
+        }
+    },
+    "properties": {
+        "changeStatus": {
+            "type": "string"
+        },
+        "resumeTotalsByTransactionType": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "title": "ResumeTotalsByTransactionType",
+                "additionalProperties": false,
+                "properties": {
+                    "totalChangeStatusApproved": {
+                        "type": "number"
+                    },
+                    "totalChangeStatusRejected": {
+                        "type": "number"
+                    },
+                    "transactionsChangeStatusApproved": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/TransactionResume"
+                        }
+                    },
+                    "transactionsChangeStatusRejected": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/TransactionResume"
+                        }
+                    },
+                    "transactionType": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "totalChangeStatusApproved",
+                    "totalChangeStatusRejected",
+                    "transactionsChangeStatusApproved",
+                    "transactionsChangeStatusRejected",
+                    "transactionType"
+                ]
+            }
+        },
+        "transactionChangeStatusBatchLogsId": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "changeStatus",
+        "resumeTotalsByTransactionType"
+    ]
+}

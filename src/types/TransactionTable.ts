@@ -1,10 +1,13 @@
-import { CustomerBasicInfo } from './CreditTable';
-
 export interface TransactionTable {
-    _id?:                string;
-    createdAt?:          string;
+    _id?:       string;
+    createdAt?: string;
+    /**
+     * Info del credito enlazado (creditInfo[0] del join en el backend): sirve para distinguir
+     * en la tabla dos transacciones del mismo cliente/monto que apuntan a creditos distintos
+     */
     creditBasicInfo?:    CreditBasicInfo;
     creditIdSource?:     string;
+    creditorCompanyId?:  string;
     currency?:           string;
     customerBasicInfo?:  CustomerBasicInfo;
     description?:        string;
@@ -12,28 +15,44 @@ export interface TransactionTable {
     sourceAccount?:      SourceAccountObject;
     status?:             string;
     total?:              number;
+    transactionSubType?: string;
     transactionType?:    string;
     updatedAt?:          string;
 }
 
-// Info del crédito enlazado (creditInfo[0] del join en el backend) — sirve
-// para distinguir en la tabla dos transacciones del mismo cliente/monto que
-// apuntan a créditos distintos (ver avance de pago y el id real del crédito).
+/**
+ * Info del credito enlazado (creditInfo[0] del join en el backend): sirve para distinguir
+ * en la tabla dos transacciones del mismo cliente/monto que apuntan a creditos distintos
+ */
 export interface CreditBasicInfo {
-    creditId:    string;
-    total:       number;
-    amountPaid:  number;
-    amountDue:   number;
+    amountDue:  number;
+    amountPaid: number;
+    creditId:   string;
+    total:      number;
+}
+
+export interface CustomerBasicInfo {
+    address?:             string;
+    customerId:           string;
+    fullName:             string;
+    phoneNumber:          string;
+    threeWordsUbication?: string;
+    ubication?:           Ubication;
+}
+
+export interface Ubication {
+    latitude?:  string;
+    longitude?: string;
 }
 
 export interface DestinationAccountObject {
     accountNumber?: string;
     walletId:       string;
-    [property: string]: any;
+    [property: string]: unknown;
 }
 
 export interface SourceAccountObject {
     accountNumber?: string;
     walletId:       string;
-    [property: string]: any;
+    [property: string]: unknown;
 }

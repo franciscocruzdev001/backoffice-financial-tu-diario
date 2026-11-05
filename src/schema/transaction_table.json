@@ -17,6 +17,9 @@
         "transactionType": {
             "type": "string"
         },
+        "transactionSubType": {
+            "type": "string"
+        },
         "total": {
             "type": "number"
         },
@@ -31,6 +34,75 @@
         },
         "creditIdSource": {
             "type": "string"
+        },
+        "creditorCompanyId": {
+            "type": "string"
+        },
+        "creditBasicInfo": {
+            "type": "object",
+            "title": "CreditBasicInfo",
+            "additionalProperties": false,
+            "required": [
+                "creditId",
+                "total",
+                "amountPaid",
+                "amountDue"
+            ],
+            "properties": {
+                "creditId": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                },
+                "amountPaid": {
+                    "type": "number"
+                },
+                "amountDue": {
+                    "type": "number"
+                }
+            },
+            "description": "Info del credito enlazado (creditInfo[0] del join en el backend): sirve para distinguir en la tabla dos transacciones del mismo cliente/monto que apuntan a creditos distintos"
+        },
+        "customerBasicInfo": {
+            "type": "object",
+            "title": "CustomerBasicInfo",
+            "additionalProperties": false,
+            "required": [
+                "customerId",
+                "fullName",
+                "phoneNumber"
+            ],
+            "properties": {
+                "customerId": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "threeWordsUbication": {
+                    "type": "string"
+                },
+                "ubication": {
+                    "type": "object",
+                    "title": "Ubication",
+                    "additionalProperties": false,
+                    "properties": {
+                        "latitude": {
+                            "type": "string"
+                        },
+                        "longitude": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         },
         "sourceAccount": {
             "type": "object",
